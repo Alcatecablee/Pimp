@@ -297,12 +297,20 @@ export const handleVideoStream: RequestHandler = async (req, res) => {
     }
 
     const { id } = req.params;
+    const { format } = req.query; // Support format query param (hls, mp4)
 
     // Check cache first
     if (cache && Date.now() - cache.timestamp < CACHE_TTL) {
       const video = cache.data.videos.find((v) => v.id === id);
-      if (video?.poster) {
-        return res.redirect(video.poster);
+      if (video?.assetUrl && video?.assetPath) {
+        const assetUrl = video.assetUrl || "https://assets.upns.net";
+
+        if (format === "mp4") {
+          return res.redirect(`${assetUrl}${video.assetPath}/video.mp4`);
+        }
+
+        // Default to HLS
+        return res.redirect(`${assetUrl}${video.assetPath}/index.m3u8`);
       }
     }
 
@@ -313,12 +321,29 @@ export const handleVideoStream: RequestHandler = async (req, res) => {
 
     if (!videoData?.poster) {
       return res.status(404).json({
-        error: "Video source not available",
+        error: "Video not found",
       });
     }
 
-    // Redirect to the poster URL which is the actual video source
-    res.redirect(videoData.poster);
+    // Extract asset path from poster
+    const posterPath = videoData.poster
+      ? videoData.poster.replace(/\/[^/]*$/, "")
+      : null;
+
+    if (!posterPath) {
+      return res.status(404).json({
+        error: "Video source path not available",
+      });
+    }
+
+    const assetUrl = videoData.assetUrl || "https://assets.upns.net";
+
+    if (format === "mp4") {
+      return res.redirect(`${assetUrl}${posterPath}/video.mp4`);
+    }
+
+    // Default to HLS stream
+    res.redirect(`${assetUrl}${posterPath}/index.m3u8`);
   } catch (error) {
     console.error(`Error streaming video ${req.params.id}:`, error);
     res.status(500).json({
