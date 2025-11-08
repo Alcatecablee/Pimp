@@ -138,21 +138,14 @@ export const handleGetVideos: RequestHandler = async (req, res) => {
             await new Promise((resolve) => setTimeout(resolve, delayMs));
           }
 
-          // Check time remaining before fetching
+          // Check if we have enough time to fetch this folder
           const timeBeforeFetch = GLOBAL_TIMEOUT - (Date.now() - startTime);
-          const folderFetchTimeout = Math.min(
-            FOLDER_TIMEOUT,
-            Math.max(1000, timeBeforeFetch - 1000),
-          );
-
-          const controller = new AbortController();
-          const timeoutId = setTimeout(
-            () => controller.abort(),
-            folderFetchTimeout,
-          );
+          if (timeBeforeFetch < 2000) {
+            console.log(`⏭️  Skipping ${folder.name} - not enough time remaining (${timeBeforeFetch}ms)`);
+            return [];
+          }
 
           const result = await fetchAllVideosFromFolder(folder.id);
-          clearTimeout(timeoutId);
 
           const folderDuration = Date.now() - folderStartTime;
           performanceMonitor.recordFolderFetch(
