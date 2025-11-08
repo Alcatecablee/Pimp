@@ -14,14 +14,14 @@ export default function VideoPlayer() {
     const fetchVideo = async () => {
       try {
         setLoading(true);
-        const response = await fetch("/api/videos");
-        const data = await response.json();
-        const found = data.videos.find((v: Video) => v.id === id);
-        if (found) {
-          setVideo(found);
-        } else {
-          navigate("/");
+        const response = await fetch(`/api/videos/${id}`);
+        
+        if (!response.ok) {
+          throw new Error("Video not found");
         }
+        
+        const data = await response.json();
+        setVideo(data);
       } catch (error) {
         console.error("Error fetching video:", error);
         navigate("/");
@@ -82,19 +82,18 @@ export default function VideoPlayer() {
       <main className="container mx-auto px-4 py-8 max-w-5xl">
         <div className="mb-8">
           <div className="relative overflow-hidden rounded-xl bg-black aspect-video mb-6 group">
-            {video.poster || video.thumbnail ? (
-              <video
-                src={`https://upnshare.com/api/v1/video/${video.id}/stream`}
-                controls
-                className="w-full h-full"
-                poster={video.poster || video.thumbnail}
-                autoPlay
-              />
-            ) : (
-              <div className="w-full h-full bg-gradient-to-br from-purple-400 to-blue-500 flex items-center justify-center">
-                <Play className="w-24 h-24 text-white opacity-40" />
-              </div>
-            )}
+            <video
+              src={`/api/videos/${video.id}/stream`}
+              controls
+              className="w-full h-full"
+              poster={video.poster || video.thumbnail}
+              preload="metadata"
+              onError={(e) => {
+                console.error("Video playback error:", e);
+              }}
+            >
+              Your browser does not support video playback.
+            </video>
           </div>
 
           <div className="space-y-6">
