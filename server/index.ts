@@ -5,6 +5,7 @@ import { handleDemo } from "./routes/demo";
 import {
   handleGetVideos,
   handleGetVideoById,
+  handleGetStreamUrl,
   handleVideoStream,
 } from "./routes/videos";
 
