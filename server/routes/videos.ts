@@ -152,6 +152,9 @@ async function fetchAllVideosFromFolder(
 }
 
 export const handleGetVideos: RequestHandler = async (req, res) => {
+  const startTime = Date.now();
+  const GLOBAL_TIMEOUT = 25000; // 25 seconds - leave 5s buffer before Vercel's 30s limit
+
   try {
     console.log("[handleGetVideos] Starting request");
     console.log("[handleGetVideos] API_TOKEN present:", !!API_TOKEN);
@@ -174,60 +177,80 @@ export const handleGetVideos: RequestHandler = async (req, res) => {
     }
 
     console.log("Fetching fresh video data from UPNshare...");
-    const allVideos: Video[] = [];
-    const allFolders: VideoFolder[] = [];
-
-    // Fetch folders
-    const foldersData = await fetchWithAuth(
-      `${UPNSHARE_API_BASE}/video/folder`,
-    );
-
-    const folders = Array.isArray(foldersData)
-      ? foldersData
-      : foldersData.data || [];
-
-    console.log(`Found ${folders.length} folders`);
-
-    // Fetch only first page of videos from each folder (limit 20 per folder for speed)
-    const MAX_VIDEOS_PER_FOLDER = 20;
-    const TIMEOUT_PER_FOLDER = 8000; // 8 seconds per folder request
     
-    // Process folders and prepare folder metadata
-    for (const folder of folders) {
-      allFolders.push({
-        id: folder.id,
-        name: folder.name?.trim() || "Unnamed Folder",
-        description: folder.description?.trim() || undefined,
-        video_count: folder.video_count,
-        created_at: folder.created_at,
-        updated_at: folder.updated_at,
-      });
-    }
+    // Wrap the entire fetching logic in a timeout promise
+    const fetchPromise = (async () => {
+      const allVideos: Video[] = [];
+      const allFolders: VideoFolder[] = [];
 
-    // Fetch videos from all folders in parallel for much faster response
-    console.log(`Fetching videos from ${folders.length} folders in parallel...`);
-    const folderPromises = folders.map(async (folder) => {
-      try {
-        const url = `${UPNSHARE_API_BASE}/video/folder/${folder.id}?page=1&perPage=${MAX_VIDEOS_PER_FOLDER}`;
-        const response = await fetchWithAuth(url, TIMEOUT_PER_FOLDER);
-        const videos = Array.isArray(response) ? response : response.data || [];
-        
-        console.log(`  Found ${videos.length} videos in ${folder.name}`);
-        
-        return videos.map((video: any) => normalizeVideo(video, folder.id));
-      } catch (error) {
-        console.error(`Error fetching folder ${folder.name}:`, error);
-        return []; // Return empty array on error, don't fail entire request
+      // Fetch folders
+      const foldersData = await fetchWithAuth(
+        `${UPNSHARE_API_BASE}/video/folder`,
+        5000, // 5 second timeout for folder list
+      );
+
+      const folders = Array.isArray(foldersData)
+        ? foldersData
+        : foldersData.data || [];
+
+      console.log(`Found ${folders.length} folders`);
+
+      // Fetch only first page of videos from each folder (limit 20 per folder for speed)
+      const MAX_VIDEOS_PER_FOLDER = 20;
+      const TIMEOUT_PER_FOLDER = 4000; // Reduced to 4 seconds per folder request
+      
+      // Process folders and prepare folder metadata
+      for (const folder of folders) {
+        allFolders.push({
+          id: folder.id,
+          name: folder.name?.trim() || "Unnamed Folder",
+          description: folder.description?.trim() || undefined,
+          video_count: folder.video_count,
+          created_at: folder.created_at,
+          updated_at: folder.updated_at,
+        });
       }
+
+      // Fetch videos from all folders in parallel for much faster response
+      console.log(`Fetching videos from ${folders.length} folders in parallel...`);
+      const folderPromises = folders.map(async (folder) => {
+        try {
+          // Check if we're running out of time
+          if (Date.now() - startTime > GLOBAL_TIMEOUT - 5000) {
+            console.log(`Skipping ${folder.name} - running out of time`);
+            return [];
+          }
+
+          const url = `${UPNSHARE_API_BASE}/video/folder/${folder.id}?page=1&perPage=${MAX_VIDEOS_PER_FOLDER}`;
+          const response = await fetchWithAuth(url, TIMEOUT_PER_FOLDER);
+          const videos = Array.isArray(response) ? response : response.data || [];
+          
+          console.log(`  Found ${videos.length} videos in ${folder.name}`);
+          
+          return videos.map((video: any) => normalizeVideo(video, folder.id));
+        } catch (error) {
+          console.error(`Error fetching folder ${folder.name}:`, error);
+          return []; // Return empty array on error, don't fail entire request
+        }
+      });
+
+      // Wait for all folder requests to complete
+      const videoArrays = await Promise.all(folderPromises);
+      
+      // Flatten all videos into single array
+      for (const videos of videoArrays) {
+        allVideos.push(...videos);
+      }
+
+      return { allVideos, allFolders };
+    })();
+
+    // Race between fetch and timeout
+    const timeoutPromise = new Promise<never>((_, reject) => {
+      setTimeout(() => reject(new Error('Global timeout reached')), GLOBAL_TIMEOUT);
     });
 
-    // Wait for all folder requests to complete
-    const videoArrays = await Promise.all(folderPromises);
-    
-    // Flatten all videos into single array
-    for (const videos of videoArrays) {
-      allVideos.push(...videos);
-    }
+    const { allVideos, allFolders } = await Promise.race([fetchPromise, timeoutPromise]);
 
     const response: VideosResponse = {
       videos: allVideos,
@@ -241,9 +264,19 @@ export const handleGetVideos: RequestHandler = async (req, res) => {
       timestamp: Date.now(),
     };
 
-    console.log(`Total videos fetched: ${allVideos.length}`);
+    const duration = Date.now() - startTime;
+    console.log(`Total videos fetched: ${allVideos.length} in ${duration}ms`);
     res.json(response);
   } catch (error) {
+    // If we timeout, try to return stale cache if available
+    if (error instanceof Error && error.message === 'Global timeout reached') {
+      console.error("[handleGetVideos] Global timeout reached, checking for stale cache");
+      if (cache) {
+        console.log("Returning stale cached data due to timeout");
+        return res.json(cache.data);
+      }
+    }
+
     console.error(
       "[handleGetVideos] Error fetching videos from UPNshare:",
       error,
