@@ -28,6 +28,7 @@ export function createServer() {
   // Video routes
   app.get("/api/videos", handleGetVideos);
   app.get("/api/videos/:id", handleGetVideoById);
+  app.get("/api/videos/:id/stream-url", handleGetStreamUrl);
   app.get("/api/videos/:id/stream", handleVideoStream);
 
   return app;
