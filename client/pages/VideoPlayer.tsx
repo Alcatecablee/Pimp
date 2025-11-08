@@ -3,6 +3,7 @@ import { useEffect, useState, useRef } from "react";
 import { Video } from "@shared/api";
 import { ArrowLeft, Play, Volume2, Maximize, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
+import Hls from "hls.js";
 
 export default function VideoPlayer() {
   const { id } = useParams<{ id: string }>();
@@ -37,6 +38,31 @@ export default function VideoPlayer() {
       fetchVideo();
     }
   }, [id, navigate]);
+
+  // Setup video player with direct MP4 playback
+  useEffect(() => {
+    if (!video || !videoRef.current) return;
+
+    const videoElement = videoRef.current;
+
+    const initPlayer = () => {
+      try {
+        // Use direct video stream through our proxy
+        if (video.assetUrl && video.assetPath) {
+          const mp4Url = `${video.assetUrl}${video.assetPath}/video.mp4`;
+          videoElement.src = mp4Url;
+          console.log("Loading video from:", mp4Url);
+        } else {
+          setStreamError("Video source not available");
+        }
+      } catch (error) {
+        console.error("Error initializing video player:", error);
+        setStreamError("Failed to load video");
+      }
+    };
+
+    initPlayer();
+  }, [video]);
 
   // Load saved progress and setup progress tracking
   useEffect(() => {
@@ -165,30 +191,12 @@ export default function VideoPlayer() {
             ) : (
               <video
                 ref={videoRef}
-                src={`/api/videos/${video.id}/stream`}
                 controls
                 className="w-full h-full"
                 poster={video.poster || video.thumbnail}
                 preload="metadata"
-                onError={() => {
-                  const errorCode = videoRef.current?.error?.code;
-                  const errorMessages: Record<number, string> = {
-                    1: "Loading was aborted",
-                    2: "Network error - please check your connection",
-                    3: "Unable to decode video - format may not be supported",
-                    4: "Video format is not supported by your browser",
-                  };
-                  const errorMsg =
-                    errorMessages[errorCode || 0] || "Failed to load video";
-                  setStreamError(errorMsg);
-                  console.error(
-                    "Video playback error (code:" + errorCode + "):",
-                    errorMsg,
-                  );
-                  toast.error(errorMsg);
-                }}
                 onLoadedMetadata={() => {
-                  toast.success("Video loaded successfully");
+                  console.log("Video metadata loaded");
                 }}
               >
                 Your browser does not support video playback.

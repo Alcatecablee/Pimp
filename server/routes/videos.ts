@@ -248,7 +248,7 @@ export const handleGetVideoById: RequestHandler = async (req, res) => {
 };
 
 // Get video stream URL endpoint
-// Returns the video's playable source URL
+// Returns the video's playable source URL (proxied through our server to avoid CORS)
 export const handleGetStreamUrl: RequestHandler = async (req, res) => {
   try {
     if (!API_TOKEN) {
@@ -259,49 +259,10 @@ export const handleGetStreamUrl: RequestHandler = async (req, res) => {
 
     const { id } = req.params;
 
-    // Check cache first
-    if (cache && Date.now() - cache.timestamp < CACHE_TTL) {
-      const video = cache.data.videos.find((v) => v.id === id);
-      if (video?.assetUrl && video?.assetPath) {
-        // Try HLS stream first (most common for video streaming)
-        const hslUrl = `${video.assetUrl}${video.assetPath}/index.m3u8`;
-        return res.json({
-          url: hslUrl,
-          fallback: `${video.assetUrl}${video.assetPath}/video.mp4`,
-          poster: video.poster,
-        });
-      }
-    }
-
-    // Fetch video details from API
-    const videoData = await fetchWithAuth(
-      `${UPNSHARE_API_BASE}/video/manage/${id}`,
-    );
-
-    if (!videoData?.poster) {
-      return res.status(404).json({
-        error: "Video not found",
-      });
-    }
-
-    // Extract asset path from poster
-    const posterPath = videoData.poster
-      ? videoData.poster.replace(/\/[^/]*$/, "")
-      : null;
-
-    if (!posterPath) {
-      return res.status(404).json({
-        error: "Video source path not available",
-      });
-    }
-
-    const assetUrl = videoData.assetUrl || "https://assets.upns.net";
-    const hslUrl = `${assetUrl}${posterPath}/index.m3u8`;
-
+    // Return our proxy URL instead of direct URL to avoid CORS issues
     res.json({
-      url: hslUrl,
-      fallback: `${assetUrl}${posterPath}/video.mp4`,
-      poster: videoData.poster,
+      url: `/api/videos/${id}/hls-proxy`,
+      poster: cache?.data.videos.find((v) => v.id === id)?.poster,
     });
   } catch (error) {
     console.error(`Error getting video stream URL ${req.params.id}:`, error);
@@ -310,6 +271,86 @@ export const handleGetStreamUrl: RequestHandler = async (req, res) => {
         error instanceof Error
           ? error.message
           : "Failed to get video stream URL",
+    });
+  }
+};
+
+// HLS Proxy endpoint - proxies HLS manifest and segments with CORS headers
+export const handleHlsProxy: RequestHandler = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const pathParam = req.query.path;
+    const path = typeof pathParam === "string" ? pathParam : "";
+
+    // Check cache first to get video details
+    let video = cache?.data.videos.find((v) => v.id === id);
+
+    if (!video) {
+      const videoData = await fetchWithAuth(
+        `${UPNSHARE_API_BASE}/video/manage/${id}`,
+      );
+      video = normalizeVideo(videoData, videoData.folder_id || "");
+    }
+
+    if (!video?.assetUrl || !video?.assetPath) {
+      return res.status(404).json({ error: "Video not found" });
+    }
+
+    const assetUrl = video.assetUrl;
+    const assetPath = video.assetPath.startsWith("/")
+      ? video.assetPath
+      : "/" + video.assetPath;
+
+    // Construct the full URL to the asset
+    const targetUrl = path
+      ? `${assetUrl}${assetPath}/${path}`
+      : `${assetUrl}${assetPath}/index.m3u8`;
+
+    // Fetch the resource with authentication headers
+    const response = await fetch(targetUrl, {
+      headers: {
+        "api-token": API_TOKEN,
+        "Referer": "https://upnshare.com/",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+      },
+    });
+
+    if (!response.ok) {
+      return res.status(response.status).json({ error: "Resource not found" });
+    }
+
+    // Set CORS headers
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Range");
+
+    // Copy content type
+    const contentType = response.headers.get("content-type");
+    if (contentType) {
+      res.setHeader("Content-Type", contentType);
+    }
+
+    // For m3u8 files, modify the URLs to point to our proxy
+    const isManifest = path === "" || (typeof path === "string" && path.endsWith(".m3u8"));
+    
+    if (isManifest) {
+      const text = await response.text();
+      const modifiedText = text.replace(
+        /(^|[\r\n])([^#\r\n][^\r\n]*\.ts|[^\r\n]*\.m3u8)/gm,
+        (match, prefix, filename) => {
+          return `${prefix}/api/videos/${id}/hls-proxy?path=${filename}`;
+        },
+      );
+      res.send(modifiedText);
+    } else {
+      // For video segments, stream them directly
+      const buffer = await response.arrayBuffer();
+      res.send(Buffer.from(buffer));
+    }
+  } catch (error) {
+    console.error(`Error proxying HLS for video ${req.params.id}:`, error);
+    res.status(500).json({
+      error: error instanceof Error ? error.message : "Failed to proxy HLS",
     });
   }
 };

@@ -7,6 +7,7 @@ import {
   handleGetVideoById,
   handleGetStreamUrl,
   handleVideoStream,
+  handleHlsProxy,
 } from "./routes/videos";
 
 export function createServer() {
@@ -30,6 +31,7 @@ export function createServer() {
   app.get("/api/videos/:id", handleGetVideoById);
   app.get("/api/videos/:id/stream-url", handleGetStreamUrl);
   app.get("/api/videos/:id/stream", handleVideoStream);
+  app.get("/api/videos/:id/hls-proxy", handleHlsProxy);
 
   return app;
 }
