@@ -1,9 +1,8 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { Video } from "@shared/api";
-import { ArrowLeft, Play, Volume2, Maximize, AlertCircle } from "lucide-react";
+import { ArrowLeft, Play, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
-import Hls from "hls.js";
 
 export default function VideoPlayer() {
   const { id } = useParams<{ id: string }>();
@@ -11,7 +10,6 @@ export default function VideoPlayer() {
   const [video, setVideo] = useState<Video | null>(null);
   const [loading, setLoading] = useState(true);
   const [streamError, setStreamError] = useState<string | null>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     const fetchVideo = async () => {
@@ -39,87 +37,7 @@ export default function VideoPlayer() {
     }
   }, [id, navigate]);
 
-  // Setup video player with direct MP4 playback
-  useEffect(() => {
-    if (!video || !videoRef.current) return;
-
-    const videoElement = videoRef.current;
-
-    const initPlayer = () => {
-      try {
-        // Use direct video stream through our proxy
-        if (video.assetUrl && video.assetPath) {
-          const mp4Url = `${video.assetUrl}${video.assetPath}/video.mp4`;
-          videoElement.src = mp4Url;
-          console.log("Loading video from:", mp4Url);
-        } else {
-          setStreamError("Video source not available");
-        }
-      } catch (error) {
-        console.error("Error initializing video player:", error);
-        setStreamError("Failed to load video");
-      }
-    };
-
-    initPlayer();
-  }, [video]);
-
-  // Load saved progress and setup progress tracking
-  useEffect(() => {
-    if (!video || !videoRef.current) return;
-
-    const videoElement = videoRef.current;
-
-    // Load saved progress
-    const saved = localStorage.getItem(`video-progress-${video.id}`);
-    if (saved) {
-      try {
-        const data = JSON.parse(saved);
-        if (
-          data.currentTime &&
-          data.currentTime > 5 &&
-          data.currentTime < video.duration - 10
-        ) {
-          videoElement.currentTime = data.currentTime;
-          toast.info(
-            `Resuming from ${Math.floor(data.currentTime / 60)}:${String(Math.floor(data.currentTime % 60)).padStart(2, "0")}`,
-          );
-        }
-      } catch (e) {
-        console.error("Error loading progress:", e);
-      }
-    }
-
-    // Save progress periodically
-    const saveProgress = () => {
-      if (videoElement.currentTime > 0) {
-        localStorage.setItem(
-          `video-progress-${video.id}`,
-          JSON.stringify({
-            currentTime: videoElement.currentTime,
-            duration: video.duration,
-            lastWatched: new Date().toISOString(),
-          }),
-        );
-      }
-    };
-
-    // Save progress every 5 seconds
-    const interval = setInterval(saveProgress, 5000);
-
-    // Save on pause and ended
-    videoElement.addEventListener("pause", saveProgress);
-    videoElement.addEventListener("ended", () => {
-      // Clear progress when video ends
-      localStorage.removeItem(`video-progress-${video.id}`);
-    });
-
-    return () => {
-      clearInterval(interval);
-      saveProgress(); // Save on unmount
-      videoElement.removeEventListener("pause", saveProgress);
-    };
-  }, [video]);
+  // Video will be loaded via UPNshare's embed iframe
 
   if (loading) {
     return (
@@ -178,9 +96,7 @@ export default function VideoPlayer() {
                   <button
                     onClick={() => {
                       setStreamError(null);
-                      if (videoRef.current) {
-                        videoRef.current.load();
-                      }
+                      window.location.reload();
                     }}
                     className="mt-4 px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:opacity-90 transition-opacity"
                   >
@@ -189,18 +105,13 @@ export default function VideoPlayer() {
                 </div>
               </div>
             ) : (
-              <video
-                ref={videoRef}
-                controls
+              <iframe
+                src={`https://upnshare.com/embed/${video.id}`}
                 className="w-full h-full"
-                poster={video.poster || video.thumbnail}
-                preload="metadata"
-                onLoadedMetadata={() => {
-                  console.log("Video metadata loaded");
-                }}
-              >
-                Your browser does not support video playback.
-              </video>
+                allowFullScreen
+                allow="autoplay; encrypted-media"
+                title={video.title}
+              />
             )}
           </div>
 
