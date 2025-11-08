@@ -9,6 +9,7 @@ export default function VideoPlayer() {
   const navigate = useNavigate();
   const [video, setVideo] = useState<Video | null>(null);
   const [loading, setLoading] = useState(true);
+  const [streamError, setStreamError] = useState<string | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
