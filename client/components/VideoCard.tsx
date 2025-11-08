@@ -78,12 +78,8 @@ export function VideoCard({ video }: VideoCardProps) {
           {video.views !== undefined && (
             <span>{formatViews(video.views)} views</span>
           )}
-          {video.views !== undefined && video.created_at && (
-            <span>•</span>
-          )}
-          {video.created_at && (
-            <span>{formatDate(video.created_at)}</span>
-          )}
+          {video.views !== undefined && video.created_at && <span>•</span>}
+          {video.created_at && <span>{formatDate(video.created_at)}</span>}
         </div>
 
         {video.description && (

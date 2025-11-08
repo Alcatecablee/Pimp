@@ -15,7 +15,7 @@ async function fetchWithAuth(url: string) {
 
   if (!response.ok) {
     throw new Error(
-      `UPNshare API error: ${response.status} ${response.statusText}`
+      `UPNshare API error: ${response.status} ${response.statusText}`,
     );
   }
 
@@ -33,7 +33,9 @@ export const handleGetVideos: RequestHandler = async (req, res) => {
     const allVideos: Video[] = [];
     const allFolders: VideoFolder[] = [];
 
-    const foldersData = await fetchWithAuth(`${UPNSHARE_API_BASE}/video/folder`);
+    const foldersData = await fetchWithAuth(
+      `${UPNSHARE_API_BASE}/video/folder`,
+    );
 
     const folders = Array.isArray(foldersData)
       ? foldersData
@@ -50,7 +52,7 @@ export const handleGetVideos: RequestHandler = async (req, res) => {
       });
 
       const videosInFolder = await fetchWithAuth(
-        `${UPNSHARE_API_BASE}/video/folder/${folder.id}`
+        `${UPNSHARE_API_BASE}/video/folder/${folder.id}`,
       );
 
       const videos = Array.isArray(videosInFolder)

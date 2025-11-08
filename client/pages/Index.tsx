@@ -21,7 +21,8 @@ export default function Index() {
 
       if (!response.ok) {
         const errorData = await response.json();
-        const errorMessage = errorData.error || `HTTP ${response.status}: ${response.statusText}`;
+        const errorMessage =
+          errorData.error || `HTTP ${response.status}: ${response.statusText}`;
         throw new Error(errorMessage);
       }
 
@@ -29,7 +30,10 @@ export default function Index() {
       setVideos(data.videos);
       setFolders(data.folders);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "An error occurred while fetching videos";
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : "An error occurred while fetching videos";
       setError(errorMessage);
       console.error("Error fetching videos:", err);
     } finally {
@@ -58,7 +62,9 @@ export default function Index() {
           <div className="mb-8 p-4 bg-destructive/10 border border-destructive/20 rounded-lg flex items-gap gap-3">
             <AlertCircle className="w-5 h-5 text-destructive flex-shrink-0 mt-0.5" />
             <div>
-              <h3 className="font-semibold text-destructive mb-1">Error Loading Videos</h3>
+              <h3 className="font-semibold text-destructive mb-1">
+                Error Loading Videos
+              </h3>
               <p className="text-sm text-destructive/80">{error}</p>
               <button
                 onClick={fetchVideos}
@@ -96,7 +102,7 @@ export default function Index() {
             {folders.length > 0 ? (
               folders.map((folder) => {
                 const folderVideos = videos.filter(
-                  (v) => v.folder_id === folder.id
+                  (v) => v.folder_id === folder.id,
                 );
 
                 return (
@@ -104,10 +110,13 @@ export default function Index() {
                     <div className="mb-6">
                       <h2 className="text-2xl font-bold mb-2">{folder.name}</h2>
                       {folder.description && (
-                        <p className="text-muted-foreground">{folder.description}</p>
+                        <p className="text-muted-foreground">
+                          {folder.description}
+                        </p>
                       )}
                       <p className="text-sm text-muted-foreground mt-2">
-                        {folderVideos.length} video{folderVideos.length !== 1 ? "s" : ""}
+                        {folderVideos.length} video
+                        {folderVideos.length !== 1 ? "s" : ""}
                       </p>
                     </div>
 
@@ -119,7 +128,9 @@ export default function Index() {
                       </div>
                     ) : (
                       <div className="text-center py-8 bg-secondary/30 rounded-lg">
-                        <p className="text-muted-foreground">No videos in this folder</p>
+                        <p className="text-muted-foreground">
+                          No videos in this folder
+                        </p>
                       </div>
                     )}
                   </div>
@@ -130,7 +141,8 @@ export default function Index() {
                 <div className="mb-8">
                   <h2 className="text-3xl font-bold mb-2">All Videos</h2>
                   <p className="text-muted-foreground">
-                    {videos.length} video{videos.length !== 1 ? "s" : ""} available
+                    {videos.length} video{videos.length !== 1 ? "s" : ""}{" "}
+                    available
                   </p>
                 </div>
 

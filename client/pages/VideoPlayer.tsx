@@ -123,14 +123,13 @@ export default function VideoPlayer() {
 
                 {video.duration > 0 && (
                   <span>
-                    {Math.floor(video.duration / 60)}:{String(video.duration % 60).padStart(2, "0")}
+                    {Math.floor(video.duration / 60)}:
+                    {String(video.duration % 60).padStart(2, "0")}
                   </span>
                 )}
 
                 {video.size && (
-                  <span>
-                    {(video.size / (1024 * 1024)).toFixed(2)} MB
-                  </span>
+                  <span>{(video.size / (1024 * 1024)).toFixed(2)} MB</span>
                 )}
               </div>
             </div>
