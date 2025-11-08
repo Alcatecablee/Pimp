@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Video } from "@shared/api";
-import { ArrowLeft, Play, AlertCircle } from "lucide-react";
+import { ArrowLeft, Play } from "lucide-react";
 import { toast } from "sonner";
 
 export default function VideoPlayer() {
@@ -9,7 +9,6 @@ export default function VideoPlayer() {
   const navigate = useNavigate();
   const [video, setVideo] = useState<Video | null>(null);
   const [loading, setLoading] = useState(true);
-  const [streamError, setStreamError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchVideo = async () => {
