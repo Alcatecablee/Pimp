@@ -40,8 +40,8 @@ export function VideoCard({ video }: VideoCardProps) {
   };
 
   return (
-    <div className="group cursor-pointer rounded-xl overflow-hidden hover:shadow-lg transition-shadow duration-300">
-      <div className="relative overflow-hidden rounded-lg bg-gray-200 dark:bg-gray-800 aspect-video mb-3">
+    <div className="group cursor-pointer">
+      <div className="relative overflow-hidden rounded-lg bg-gray-200 dark:bg-gray-800 aspect-video mb-3 shadow-sm hover:shadow-md transition-shadow duration-300">
         {video.poster || video.thumbnail ? (
           <img
             src={video.poster || video.thumbnail}
