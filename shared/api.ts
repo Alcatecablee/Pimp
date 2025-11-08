@@ -10,3 +10,40 @@
 export interface DemoResponse {
   message: string;
 }
+
+/**
+ * Video from UPNshare API
+ */
+export interface Video {
+  id: string;
+  title: string;
+  description?: string;
+  duration: number;
+  thumbnail?: string;
+  poster?: string;
+  created_at?: string;
+  updated_at?: string;
+  views?: number;
+  size?: number;
+}
+
+/**
+ * Folder from UPNshare API
+ */
+export interface VideoFolder {
+  id: string;
+  name: string;
+  description?: string;
+  video_count?: number;
+  created_at?: string;
+  updated_at?: string;
+}
+
+/**
+ * Response from /api/videos endpoint - lists all videos from all folders
+ */
+export interface VideosResponse {
+  videos: Video[];
+  folders: VideoFolder[];
+  total: number;
+}
