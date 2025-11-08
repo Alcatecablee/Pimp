@@ -141,7 +141,9 @@ export const handleGetVideos: RequestHandler = async (req, res) => {
           // Check if we have enough time to fetch this folder
           const timeBeforeFetch = GLOBAL_TIMEOUT - (Date.now() - startTime);
           if (timeBeforeFetch < 2000) {
-            console.log(`⏭️  Skipping ${folder.name} - not enough time remaining (${timeBeforeFetch}ms)`);
+            console.log(
+              `⏭️  Skipping ${folder.name} - not enough time remaining (${timeBeforeFetch}ms)`,
+            );
             return [];
           }
 
@@ -230,8 +232,13 @@ export const handleGetVideos: RequestHandler = async (req, res) => {
       allVideos = result.allVideos;
       allFolders = result.allFolders;
     } catch (timeoutError) {
-      if (timeoutError instanceof Error && timeoutError.message === "Global timeout reached") {
-        console.warn("[handleGetVideos] ⏱️  Timeout reached, returning partial/cached data");
+      if (
+        timeoutError instanceof Error &&
+        timeoutError.message === "Global timeout reached"
+      ) {
+        console.warn(
+          "[handleGetVideos] ⏱️  Timeout reached, returning partial/cached data",
+        );
         // Try to return what we have so far - better than failing
         if (cache && Date.now() - cache.timestamp < CACHE_TTL * 2) {
           // Even if cache is stale, return it rather than fail

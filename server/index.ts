@@ -36,7 +36,7 @@ export function createServer() {
   app.get("/api/videos/:id/stream-url", handleGetStreamUrl);
   app.get("/api/videos/:id/stream", handleVideoStream);
   app.get("/api/videos/:id/hls-proxy", handleHlsProxy);
-  
+
   // Background refresh routes
   app.post("/api/refresh/now", handleRefreshNow);
   app.get("/api/refresh/status", handleRefreshStatus);
