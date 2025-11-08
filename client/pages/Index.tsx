@@ -25,8 +25,8 @@ export default function Index() {
 
   const fetchVideos = async (retryCount = 0) => {
     const MAX_RETRIES = 3;
-    const RETRY_DELAY = 2000;
-    const REQUEST_TIMEOUT = 25000; // 25 seconds - matches server timeout
+    const RETRY_DELAY = 1500;
+    const REQUEST_TIMEOUT = 20000; // 20 seconds - gives server 15s + 5s buffer
 
     try {
       if (retryCount === 0) {
