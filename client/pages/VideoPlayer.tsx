@@ -136,32 +136,54 @@ export default function VideoPlayer() {
       <main className="container mx-auto px-4 py-8 max-w-5xl">
         <div className="mb-8">
           <div className="relative overflow-hidden rounded-xl bg-black aspect-video mb-6 group">
-            <video
-              ref={videoRef}
-              src={`/api/videos/${video.id}/stream`}
-              controls
-              className="w-full h-full"
-              poster={video.poster || video.thumbnail}
-              preload="metadata"
-              onError={() => {
-                const errorCode = videoRef.current?.error?.code;
-                const errorMessages: Record<number, string> = {
-                  1: "Loading was aborted",
-                  2: "Network error - please check your connection",
-                  3: "Unable to decode video - format may not be supported",
-                  4: "Video format is not supported by your browser",
-                };
-                const errorMsg = errorMessages[errorCode || 0] || "Failed to load video";
-                setStreamError(errorMsg);
-                console.error("Video playback error (code:" + errorCode + "):", errorMsg);
-                toast.error(errorMsg);
-              }}
-              onLoadedMetadata={() => {
-                toast.success("Video loaded successfully");
-              }}
-            >
-              Your browser does not support video playback.
-            </video>
+            {streamError ? (
+              <div className="flex items-center justify-center h-full bg-slate-900">
+                <div className="text-center text-white">
+                  <div className="mb-4 inline-flex items-center justify-center w-12 h-12 bg-red-500/20 rounded-lg">
+                    <AlertCircle className="w-6 h-6 text-red-500" />
+                  </div>
+                  <p className="font-semibold mb-2">{streamError}</p>
+                  <button
+                    onClick={() => {
+                      setStreamError(null);
+                      if (videoRef.current) {
+                        videoRef.current.load();
+                      }
+                    }}
+                    className="mt-4 px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:opacity-90 transition-opacity"
+                  >
+                    Retry
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <video
+                ref={videoRef}
+                src={`/api/videos/${video.id}/stream`}
+                controls
+                className="w-full h-full"
+                poster={video.poster || video.thumbnail}
+                preload="metadata"
+                onError={() => {
+                  const errorCode = videoRef.current?.error?.code;
+                  const errorMessages: Record<number, string> = {
+                    1: "Loading was aborted",
+                    2: "Network error - please check your connection",
+                    3: "Unable to decode video - format may not be supported",
+                    4: "Video format is not supported by your browser",
+                  };
+                  const errorMsg = errorMessages[errorCode || 0] || "Failed to load video";
+                  setStreamError(errorMsg);
+                  console.error("Video playback error (code:" + errorCode + "):", errorMsg);
+                  toast.error(errorMsg);
+                }}
+                onLoadedMetadata={() => {
+                  toast.success("Video loaded successfully");
+                }}
+              >
+                Your browser does not support video playback.
+              </video>
+            )}
           </div>
 
           <div className="space-y-6">
