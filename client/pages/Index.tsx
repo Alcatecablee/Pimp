@@ -28,11 +28,22 @@ export default function Index() {
     fetchVideos();
   }, []);
 
-  const fetchVideos = async () => {
+  const fetchVideos = async (retryCount = 0) => {
+    const MAX_RETRIES = 2;
+    const RETRY_DELAY = 2000; // 2 seconds
+    
     try {
       setLoading(true);
       setError(null);
-      const response = await fetch("/api/videos");
+      
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+      
+      const response = await fetch("/api/videos", {
+        signal: controller.signal,
+      });
+      
+      clearTimeout(timeoutId);
 
       if (!response.ok) {
         let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
@@ -58,6 +69,15 @@ export default function Index() {
       setFolders(data.folders);
       toast.success(`Loaded ${data.videos.length} videos successfully`);
     } catch (err) {
+      // Retry logic for network errors
+      if (retryCount < MAX_RETRIES && err instanceof Error && 
+          (err.name === 'AbortError' || err.message.includes('fetch'))) {
+        console.log(`Retrying... Attempt ${retryCount + 1} of ${MAX_RETRIES}`);
+        toast.info(`Connection issue, retrying... (${retryCount + 1}/${MAX_RETRIES})`);
+        await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+        return fetchVideos(retryCount + 1);
+      }
+      
       const errorMessage =
         err instanceof Error
           ? err.message
