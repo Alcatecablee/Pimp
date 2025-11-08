@@ -90,7 +90,7 @@ export async function refreshVideoCache(): Promise<{
         );
 
         return result.videos.map((video: any) =>
-          normalizeVideo(video, folder.id),
+          normalizeVideo(video, folder.id, folder.name),
         );
       } catch (error) {
         console.error(`  ❌ Error fetching ${folder.name}:`, error);

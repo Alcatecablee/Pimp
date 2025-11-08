@@ -64,6 +64,13 @@ shared/                   # Types used by both client & server
 - Set up dev workflow for automatic server restart
 - **Latest (Nov 8, 2025)**: Fixed Vercel production timeout issues with global 25s timeout and stale cache fallback
 
+### New Features Added (Nov 8, 2025)
+- **Pagination**: Videos now display 20 per page with page number controls (Previous/Next buttons, numbered pages)
+- **Tag System**: Videos are automatically tagged with their folder names for easy categorization
+- **Tag Filtering**: Users can filter videos by clicking tag buttons on the homepage
+- **Hover Preview**: Video thumbnails show preview images on hover (500ms delay) when preview URLs are available from UPNshare API
+- **Enhanced Video Cards**: Now display folder tags as badges below video metadata
+
 ## Robustness Improvements (Nov 8, 2025)
 ### Backend Optimizations (server/routes/videos.ts)
 - **Global Timeout Protection**: 25-second global timeout to stay within Vercel's 30s serverless limit
@@ -82,6 +89,9 @@ shared/                   # Types used by both client & server
 - **30-Second Timeout**: Frontend timeout protection for API calls
 - **Loading State Management**: Spinner stays active throughout all retry attempts
 - **User Feedback**: Toast notifications during retries and success/error states
+- **Pagination System**: Client-side pagination showing 20 videos per page with smart page controls
+- **Tag Filtering**: Real-time filtering by tags with visual filter buttons
+- **Multi-Filter Support**: Combines search, folder selection, and tag filtering seamlessly
 
 ### Vercel Deployment Configuration
 - **Serverless Bundle**: Pre-builds server code into single CommonJS file (vite.config.serverless.ts)
@@ -98,3 +108,6 @@ shared/                   # Types used by both client & server
 - **Production Build**: Three separate builds - client SPA, server, and serverless bundle
 - **Error Handling**: Comprehensive try-catch blocks with meaningful error messages
 - **Performance**: Parallel API fetching reduces load time from ~8s to ~2s
+- **Client-Side Filtering**: Uses React useMemo for efficient video filtering and pagination
+- **Tag System**: Folder names automatically become video tags for categorization
+- **Preview Support**: Infrastructure in place to show video previews on hover when UPNshare provides preview URLs
