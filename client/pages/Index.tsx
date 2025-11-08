@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import { VideosResponse, Video } from "@shared/api";
+import { VideosResponse, Video, VideoFolder } from "@shared/api";
 import { VideoCard } from "@/components/VideoCard";
 import { Loader2, AlertCircle } from "lucide-react";
 
 export default function Index() {
   const [videos, setVideos] = useState<Video[]>([]);
+  const [folders, setFolders] = useState<VideoFolder[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
