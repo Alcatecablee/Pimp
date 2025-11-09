@@ -13,6 +13,12 @@ import {
 import { handleRefreshNow, handleRefreshStatus } from "./routes/refresh";
 import { handleGetRealtime } from "./routes/realtime";
 import { handleGetAdminOverview } from "./routes/admin";
+import {
+  handleDeleteVideo,
+  handleRenameVideo,
+  handleMoveVideosToFolder,
+  handleBulkDeleteVideos,
+} from "./routes/video-management";
 import { startBackgroundRefresh } from "./utils/background-refresh";
 
 export function createServer() {
@@ -48,6 +54,10 @@ export function createServer() {
 
   // Admin routes
   app.get("/api/admin/overview", handleGetAdminOverview);
+  app.delete("/api/admin/videos/:id", handleDeleteVideo);
+  app.patch("/api/admin/videos/:id", handleRenameVideo);
+  app.post("/api/admin/videos/move", handleMoveVideosToFolder);
+  app.post("/api/admin/videos/bulk-delete", handleBulkDeleteVideos);
 
   // Start background refresh on server startup (non-blocking)
   // Schedule it to run after a short delay to not interfere with first request
