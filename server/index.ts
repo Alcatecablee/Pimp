@@ -11,6 +11,7 @@ import {
   handleHlsProxy,
 } from "./routes/videos";
 import { handleRefreshNow, handleRefreshStatus } from "./routes/refresh";
+import { handleGetRealtime } from "./routes/realtime";
 import { startBackgroundRefresh } from "./utils/background-refresh";
 
 export function createServer() {
@@ -40,6 +41,9 @@ export function createServer() {
   // Background refresh routes
   app.post("/api/refresh/now", handleRefreshNow);
   app.get("/api/refresh/status", handleRefreshStatus);
+
+  // Realtime stats
+  app.get("/api/realtime", handleGetRealtime);
 
   // Start background refresh on server startup (non-blocking)
   // Schedule it to run after a short delay to not interfere with first request

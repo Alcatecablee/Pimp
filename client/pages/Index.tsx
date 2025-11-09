@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from "react";
-import { VideosResponse, Video, VideoFolder } from "@shared/api";
+import { VideosResponse, Video, VideoFolder, RealtimeResponse } from "@shared/api";
 import { VideoCard } from "@/components/VideoCard";
 import { Header } from "@/components/Header";
 import { Sidebar } from "@/components/Sidebar";
@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 export default function Index() {
   const [videos, setVideos] = useState<Video[]>([]);
   const [folders, setFolders] = useState<VideoFolder[]>([]);
+  const [realtimeStats, setRealtimeStats] = useState<Map<string, number>>(new Map());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(() => {
@@ -25,7 +26,33 @@ export default function Index() {
 
   useEffect(() => {
     fetchVideos();
+    fetchRealtimeStats();
+
+    // Poll for realtime stats every 30 seconds
+    const interval = setInterval(() => {
+      fetchRealtimeStats();
+    }, 30000);
+
+    return () => clearInterval(interval);
   }, []);
+
+  const fetchRealtimeStats = async () => {
+    try {
+      const response = await fetch("/api/realtime");
+      if (response.ok) {
+        const data: RealtimeResponse = await response.json();
+        const statsMap = new Map<string, number>();
+        data.data?.forEach((item) => {
+          if (item.realtime > 0) {
+            statsMap.set(item.id, item.realtime);
+          }
+        });
+        setRealtimeStats(statsMap);
+      }
+    } catch (error) {
+      console.error("Error fetching realtime stats:", error);
+    }
+  };
 
   const fetchVideos = async (retryCount = 0) => {
     const MAX_RETRIES = 3;
@@ -298,6 +325,7 @@ export default function Index() {
                           key={video.id}
                           video={video}
                           folder={getFolderById(video.folder_id)}
+                          liveViewers={realtimeStats.get(video.id)}
                         />
                       ))}
                     </div>

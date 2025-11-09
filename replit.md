@@ -129,3 +129,15 @@ shared/                   # Types used by both client & server
 - **UPnShare Iframe API Integration**: Player URL format `?api=all#videoId` enables API control
 - **Styling**: Red progress bar, gradient overlay, smooth transitions matching YouTube aesthetic
 - **Note**: Iframe postMessage communication requires further testing to enable full playback control
+
+### Engagement Features (Nov 9, 2025)
+- **Related Videos Sidebar**: Automatically displays 5-10 videos from the same folder on video player page
+  - Shows video thumbnails with hover effects
+  - Displays duration badges and folder name
+  - Clickable to navigate to related content
+  - Increases engagement and watch time
+- **Real-time Viewer Counter**: Infrastructure in place to display live viewer counts
+  - Backend API endpoint: `GET /api/realtime`
+  - Frontend polling every 30 seconds
+  - Badge display on video cards (top-left corner) and player page
+  - **Note**: UPnShare realtime API endpoint currently returns errors (may require premium tier or different authentication)

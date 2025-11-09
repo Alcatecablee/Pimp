@@ -1,14 +1,15 @@
 import { Video, VideoFolder } from "@shared/api";
 import { Link } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
-import { Folder, Tag } from "lucide-react";
+import { Folder, Tag, Eye } from "lucide-react";
 
 interface VideoCardProps {
   video: Video;
   folder?: VideoFolder;
+  liveViewers?: number;
 }
 
-export function VideoCard({ video, folder }: VideoCardProps) {
+export function VideoCard({ video, folder, liveViewers }: VideoCardProps) {
   const videoLink = `/video/${video.id}`;
   const [isVisible, setIsVisible] = useState(false);
   const imgRef = useRef<HTMLDivElement>(null);
@@ -133,6 +134,14 @@ export function VideoCard({ video, folder }: VideoCardProps) {
               className="h-full bg-red-600"
               style={{ width: `${watchProgress}%` }}
             />
+          </div>
+        )}
+
+        {/* Live Viewers Badge */}
+        {liveViewers && liveViewers > 0 && (
+          <div className="absolute top-1 left-1 flex items-center gap-1 bg-red-600 text-white text-xs font-semibold px-1.5 py-0.5 rounded">
+            <Eye className="w-3 h-3" />
+            <span>{liveViewers}</span>
           </div>
         )}
 

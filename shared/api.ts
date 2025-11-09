@@ -54,3 +54,21 @@ export interface VideosResponse {
   folders: VideoFolder[];
   total: number;
 }
+
+/**
+ * Realtime viewing statistics for a video
+ */
+export interface RealtimeVideoStats {
+  videoId: string;
+  viewers: number;
+}
+
+/**
+ * Response from /api/realtime endpoint
+ */
+export interface RealtimeResponse {
+  data: Array<{
+    id: string;
+    realtime: number;
+  }>;
+}

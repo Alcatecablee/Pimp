@@ -1,8 +1,8 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState, useRef, useCallback } from "react";
-import { Video, VideoFolder } from "@shared/api";
+import { Video, VideoFolder, RealtimeResponse } from "@shared/api";
 import { Header } from "@/components/Header";
-import { ThumbsUp, ThumbsDown, Share2, Download, MoreHorizontal, Folder } from "lucide-react";
+import { ThumbsUp, ThumbsDown, Share2, Download, MoreHorizontal, Folder, Eye } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -13,6 +13,8 @@ export default function VideoPlayer() {
   const navigate = useNavigate();
   const [video, setVideo] = useState<Video | null>(null);
   const [folder, setFolder] = useState<VideoFolder | null>(null);
+  const [relatedVideos, setRelatedVideos] = useState<Video[]>([]);
+  const [currentViewers, setCurrentViewers] = useState<number>(0);
   const [loading, setLoading] = useState(true);
   const [descriptionExpanded, setDescriptionExpanded] = useState(false);
   
@@ -101,9 +103,10 @@ export default function VideoPlayer() {
     const fetchVideo = async () => {
       try {
         setLoading(true);
-        const [videoResponse, videosResponse] = await Promise.all([
+        const [videoResponse, videosResponse, realtimeResponse] = await Promise.all([
           fetch(`/api/videos/${id}`),
-          fetch(`/api/videos`)
+          fetch(`/api/videos`),
+          fetch(`/api/realtime`).catch(() => null)
         ]);
 
         if (!videoResponse.ok) {
@@ -118,6 +121,23 @@ export default function VideoPlayer() {
           const videosData = await videosResponse.json();
           const matchedFolder = videosData.folders.find((f: VideoFolder) => f.id === videoData.folder_id);
           if (matchedFolder) setFolder(matchedFolder);
+
+          // Get related videos from the same folder
+          if (videoData.folder_id) {
+            const folderVideos = videosData.videos
+              .filter((v: Video) => v.folder_id === videoData.folder_id && v.id !== id)
+              .slice(0, 10);
+            setRelatedVideos(folderVideos);
+          }
+        }
+
+        // Set realtime viewer count
+        if (realtimeResponse && realtimeResponse.ok) {
+          const realtimeData: RealtimeResponse = await realtimeResponse.json();
+          const videoStats = realtimeData.data?.find((item) => item.id === id);
+          if (videoStats) {
+            setCurrentViewers(videoStats.realtime || 0);
+          }
         }
       } catch (error) {
         console.error("Error fetching video:", error);
@@ -131,6 +151,28 @@ export default function VideoPlayer() {
       fetchVideo();
     }
   }, [id, navigate]);
+
+  // Poll for realtime stats every 30 seconds
+  useEffect(() => {
+    if (!id) return;
+
+    const interval = setInterval(async () => {
+      try {
+        const response = await fetch(`/api/realtime`);
+        if (response.ok) {
+          const data: RealtimeResponse = await response.json();
+          const videoStats = data.data?.find((item) => item.id === id);
+          if (videoStats) {
+            setCurrentViewers(videoStats.realtime || 0);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching realtime stats:", error);
+      }
+    }, 30000);
+
+    return () => clearInterval(interval);
+  }, [id]);
 
   const formatViews = (views?: number) => {
     if (!views) return "No";
@@ -218,9 +260,19 @@ export default function VideoPlayer() {
             </div>
 
             {/* Video Title */}
-            <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100 leading-snug">
-              {video.title}
-            </h1>
+            <div className="space-y-2">
+              <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100 leading-snug">
+                {video.title}
+              </h1>
+              {currentViewers > 0 && (
+                <div className="flex items-center gap-2 text-sm">
+                  <div className="flex items-center gap-1.5 px-2.5 py-1 bg-red-600 text-white rounded-md font-medium">
+                    <Eye className="w-4 h-4" />
+                    <span>{currentViewers} watching now</span>
+                  </div>
+                </div>
+              )}
+            </div>
 
             {/* Video Meta + Actions */}
             <div className="flex flex-wrap items-center justify-between gap-4">
@@ -320,16 +372,66 @@ export default function VideoPlayer() {
             </div>
           </div>
 
-          {/* Suggested Videos Sidebar */}
-          <div className="space-y-2">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+          {/* Related Videos Sidebar */}
+          <div className="space-y-3">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
               Related Videos
             </h2>
-            <div className="text-center py-12 bg-gray-50 dark:bg-[#272727] rounded-xl">
-              <p className="text-gray-600 dark:text-gray-400">
-                No related videos available
-              </p>
-            </div>
+            {relatedVideos.length > 0 ? (
+              <div className="space-y-2">
+                {relatedVideos.map((relatedVideo) => (
+                  <div
+                    key={relatedVideo.id}
+                    onClick={() => navigate(`/video/${relatedVideo.id}`)}
+                    className="flex gap-2 cursor-pointer group"
+                  >
+                    {/* Thumbnail */}
+                    <div className="relative w-40 h-24 flex-shrink-0 bg-gray-200 dark:bg-gray-800 rounded-lg overflow-hidden">
+                      {relatedVideo.thumbnail || relatedVideo.poster ? (
+                        <img
+                          src={relatedVideo.thumbnail || relatedVideo.poster}
+                          alt={relatedVideo.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <Folder className="w-8 h-8 text-gray-400" />
+                        </div>
+                      )}
+                      {relatedVideo.duration > 0 && (
+                        <div className="absolute bottom-1 right-1 bg-black/80 text-white text-xs px-1.5 py-0.5 rounded">
+                          {Math.floor(relatedVideo.duration / 60)}:
+                          {String(relatedVideo.duration % 60).padStart(2, "0")}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Info */}
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                        {relatedVideo.title}
+                      </h3>
+                      {folder && (
+                        <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                          {folder.name}
+                        </p>
+                      )}
+                      {relatedVideo.views !== undefined && relatedVideo.views > 0 && (
+                        <p className="text-xs text-gray-600 dark:text-gray-400 mt-0.5">
+                          {formatViews(relatedVideo.views)} views
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12 bg-gray-50 dark:bg-[#272727] rounded-xl">
+                <p className="text-gray-600 dark:text-gray-400">
+                  No related videos available
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </div>
