@@ -36,31 +36,35 @@ export async function getPlaylists(
   try {
     const userId = req.query.userId as string || "default";
 
-    const result = await query<PlaylistRow>(
-      `SELECT * FROM playlists WHERE user_id = $1 ORDER BY created_at DESC`,
+    const result = await query<PlaylistRow & { video_ids: string[] }>(
+      `SELECT 
+        p.id, 
+        p.user_id, 
+        p.name, 
+        p.description, 
+        p.created_at, 
+        p.updated_at,
+        COALESCE(
+          ARRAY_AGG(pv.video_id ORDER BY pv.position ASC) FILTER (WHERE pv.video_id IS NOT NULL),
+          ARRAY[]::VARCHAR[]
+        ) as video_ids
+       FROM playlists p
+       LEFT JOIN playlist_videos pv ON p.id = pv.playlist_id
+       WHERE p.user_id = $1
+       GROUP BY p.id, p.user_id, p.name, p.description, p.created_at, p.updated_at
+       ORDER BY p.created_at DESC`,
       [userId]
     );
 
-    const playlists: Playlist[] = await Promise.all(
-      result.rows.map(async (row) => {
-        const videosResult = await query<PlaylistVideoRow>(
-          `SELECT video_id FROM playlist_videos 
-           WHERE playlist_id = $1 
-           ORDER BY position ASC`,
-          [row.id]
-        );
-
-        return {
-          id: row.id,
-          userId: row.user_id,
-          name: row.name,
-          description: row.description || undefined,
-          videoIds: videosResult.rows.map((v) => v.video_id),
-          createdAt: row.created_at.toISOString(),
-          updatedAt: row.updated_at.toISOString(),
-        };
-      })
-    );
+    const playlists: Playlist[] = result.rows.map((row) => ({
+      id: row.id,
+      userId: row.user_id,
+      name: row.name,
+      description: row.description || undefined,
+      videoIds: row.video_ids || [],
+      createdAt: row.created_at.toISOString(),
+      updatedAt: row.updated_at.toISOString(),
+    }));
 
     res.json({ playlists });
   } catch (error) {
@@ -282,18 +286,20 @@ export async function addVideoToPlaylist(
       return;
     }
 
-    const countResult = await query<{ count: string }>(
-      `SELECT COUNT(*) as count FROM playlist_videos WHERE playlist_id = $1`,
+    const maxPositionResult = await query<{ max_position: number | null }>(
+      `SELECT COALESCE(MAX(position), -1) as max_position 
+       FROM playlist_videos 
+       WHERE playlist_id = $1`,
       [id]
     );
 
-    const position = parseInt(countResult.rows[0].count);
+    const nextPosition = (maxPositionResult.rows[0].max_position ?? -1) + 1;
 
     await query(
       `INSERT INTO playlist_videos (playlist_id, video_id, position) 
        VALUES ($1, $2, $3)
        ON CONFLICT (playlist_id, video_id) DO NOTHING`,
-      [id, videoId, position]
+      [id, videoId, nextPosition]
     );
 
     await query(
@@ -301,7 +307,7 @@ export async function addVideoToPlaylist(
       [id]
     );
 
-    console.log(`[addVideoToPlaylist] Added video ${videoId} to playlist ${id}`);
+    console.log(`[addVideoToPlaylist] Added video ${videoId} to playlist ${id} at position ${nextPosition}`);
     res.status(201).json({ success: true });
   } catch (error) {
     console.error("[addVideoToPlaylist] Error:", error);
@@ -339,11 +345,24 @@ export async function removeVideoFromPlaylist(
     );
 
     await query(
+      `WITH ordered_videos AS (
+        SELECT id, ROW_NUMBER() OVER (ORDER BY position ASC) - 1 AS new_position
+        FROM playlist_videos
+        WHERE playlist_id = $1
+      )
+      UPDATE playlist_videos pv
+      SET position = ov.new_position
+      FROM ordered_videos ov
+      WHERE pv.id = ov.id`,
+      [id]
+    );
+
+    await query(
       `UPDATE playlists SET updated_at = NOW() WHERE id = $1`,
       [id]
     );
 
-    console.log(`[removeVideoFromPlaylist] Removed video ${videoId} from playlist ${id}`);
+    console.log(`[removeVideoFromPlaylist] Removed video ${videoId} from playlist ${id} and re-normalized positions`);
     res.status(204).send();
   } catch (error) {
     console.error("[removeVideoFromPlaylist] Error:", error);
