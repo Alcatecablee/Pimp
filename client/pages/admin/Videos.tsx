@@ -401,18 +401,18 @@ export default function VideosManagement() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-6" role="main" aria-label="Video Management">
+      <header className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold">Video Management</h2>
-          <p className="text-muted-foreground mt-1">
+          <h1 className="text-3xl font-bold">Video Management</h1>
+          <p className="text-muted-foreground mt-1" aria-live="polite">
             {filteredAndSortedVideos.length} videos total
           </p>
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm">
-              <FileDown className="h-4 w-4 mr-2" />
+            <Button variant="outline" size="sm" aria-label="Export videos">
+              <FileDown className="h-4 w-4 mr-2" aria-hidden="true" />
               Export
             </Button>
           </DropdownMenuTrigger>
@@ -425,21 +425,21 @@ export default function VideosManagement() {
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-      </div>
+      </header>
 
       {selectedVideos.size > 0 && (
-        <Card className="p-4 bg-muted">
+        <Card className="p-4 bg-muted" role="status" aria-live="polite" aria-label={`${selectedVideos.size} video${selectedVideos.size > 1 ? 's' : ''} selected`}>
           <div className="flex items-center justify-between">
             <p className="text-sm font-medium">
               {selectedVideos.size} video{selectedVideos.size > 1 ? "s" : ""} selected
             </p>
-            <div className="flex gap-2">
-              <Button variant="outline" size="sm" onClick={handleBulkMove}>
-                <MoveRight className="h-4 w-4 mr-2" />
+            <div className="flex gap-2" role="toolbar" aria-label="Bulk actions">
+              <Button variant="outline" size="sm" onClick={handleBulkMove} aria-label="Move selected videos to folder">
+                <MoveRight className="h-4 w-4 mr-2" aria-hidden="true" />
                 Move to Folder
               </Button>
-              <Button variant="destructive" size="sm" onClick={handleBulkDelete}>
-                <Trash2 className="h-4 w-4 mr-2" />
+              <Button variant="destructive" size="sm" onClick={handleBulkDelete} aria-label="Delete selected videos">
+                <Trash2 className="h-4 w-4 mr-2" aria-hidden="true" />
                 Delete Selected
               </Button>
             </div>
@@ -447,10 +447,10 @@ export default function VideosManagement() {
         </Card>
       )}
 
-      <Card className="p-4">
+      <Card className="p-4" role="search" aria-label="Search and filter videos">
         <div className="flex flex-col md:flex-row gap-4">
           <div className="flex-1 relative">
-            <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+            <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" aria-hidden="true" />
             <Input
               ref={searchInputRef}
               placeholder="Search videos... (press / to focus)"
@@ -460,6 +460,8 @@ export default function VideosManagement() {
                 setCurrentPage(1);
               }}
               className="pl-10"
+              aria-label="Search videos"
+              type="search"
             />
           </div>
 
@@ -470,7 +472,7 @@ export default function VideosManagement() {
               setCurrentPage(1);
             }}
           >
-            <SelectTrigger className="w-full md:w-[200px]">
+            <SelectTrigger className="w-full md:w-[200px]" aria-label="Filter by folder">
               <SelectValue placeholder="All Folders" />
             </SelectTrigger>
             <SelectContent>
@@ -485,7 +487,7 @@ export default function VideosManagement() {
         </div>
       </Card>
 
-      <Card>
+      <Card role="region" aria-label="Videos table">
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
@@ -494,18 +496,20 @@ export default function VideosManagement() {
                   <Checkbox
                     checked={selectedVideos.size === paginatedVideos.length && paginatedVideos.length > 0}
                     onCheckedChange={toggleAllVideos}
+                    aria-label="Select all videos on this page"
                   />
                 </TableHead>
-                <TableHead className="w-[50px]"></TableHead>
+                <TableHead className="w-[50px]" aria-label="Thumbnail"></TableHead>
                 <TableHead>
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => toggleSort("title")}
                     className="h-8 px-2"
+                    aria-label={`Sort by title ${sortField === "title" ? (sortOrder === "asc" ? "ascending" : "descending") : ""}`}
                   >
                     Title
-                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                    <ArrowUpDown className="ml-2 h-4 w-4" aria-hidden="true" />
                   </Button>
                 </TableHead>
                 <TableHead>Folder</TableHead>
@@ -515,9 +519,10 @@ export default function VideosManagement() {
                     size="sm"
                     onClick={() => toggleSort("duration")}
                     className="h-8 px-2"
+                    aria-label={`Sort by duration ${sortField === "duration" ? (sortOrder === "asc" ? "ascending" : "descending") : ""}`}
                   >
                     Duration
-                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                    <ArrowUpDown className="ml-2 h-4 w-4" aria-hidden="true" />
                   </Button>
                 </TableHead>
                 <TableHead>
@@ -526,9 +531,10 @@ export default function VideosManagement() {
                     size="sm"
                     onClick={() => toggleSort("size")}
                     className="h-8 px-2"
+                    aria-label={`Sort by size ${sortField === "size" ? (sortOrder === "asc" ? "ascending" : "descending") : ""}`}
                   >
                     Size
-                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                    <ArrowUpDown className="ml-2 h-4 w-4" aria-hidden="true" />
                   </Button>
                 </TableHead>
                 <TableHead>
@@ -537,12 +543,13 @@ export default function VideosManagement() {
                     size="sm"
                     onClick={() => toggleSort("created_at")}
                     className="h-8 px-2"
+                    aria-label={`Sort by created date ${sortField === "created_at" ? (sortOrder === "asc" ? "ascending" : "descending") : ""}`}
                   >
                     Created
-                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                    <ArrowUpDown className="ml-2 h-4 w-4" aria-hidden="true" />
                   </Button>
                 </TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead className="text-right" aria-label="Actions">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -565,13 +572,14 @@ export default function VideosManagement() {
                       <Checkbox
                         checked={selectedVideos.has(video.id)}
                         onCheckedChange={() => toggleVideoSelection(video.id)}
+                        aria-label={`Select video ${video.title}`}
                       />
                     </TableCell>
                     <TableCell>
                       {video.poster && (
                         <img
                           src={video.poster}
-                          alt={video.title}
+                          alt={`Thumbnail for ${video.title}`}
                           className="w-12 h-12 object-cover rounded"
                         />
                       )}
@@ -586,26 +594,26 @@ export default function VideosManagement() {
                     </TableCell>
                     <TableCell>
                       <Badge variant="outline" className="gap-1">
-                        <FolderOpen className="h-3 w-3" />
+                        <FolderOpen className="h-3 w-3" aria-hidden="true" />
                         {getFolderName(video.folder_id)}
                       </Badge>
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-1 text-sm">
-                        <Clock className="h-3 w-3 text-muted-foreground" />
+                        <Clock className="h-3 w-3 text-muted-foreground" aria-hidden="true" />
                         {formatDuration(video.duration)}
                       </div>
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-1 text-sm">
-                        <HardDrive className="h-3 w-3 text-muted-foreground" />
+                        <HardDrive className="h-3 w-3 text-muted-foreground" aria-hidden="true" />
                         {formatBytes(video.size || 0)}
                       </div>
                     </TableCell>
                     <TableCell className="text-sm text-muted-foreground">
                       {video.created_at ? (
                         <div className="flex items-center gap-1">
-                          <Calendar className="h-3 w-3" />
+                          <Calendar className="h-3 w-3" aria-hidden="true" />
                           {formatDistanceToNow(new Date(video.created_at), {
                             addSuffix: true,
                           })}
@@ -620,22 +628,25 @@ export default function VideosManagement() {
                           variant="ghost"
                           size="sm"
                           onClick={() => window.open(`/video/${video.id}`, "_blank")}
+                          aria-label={`View video ${video.title}`}
                         >
-                          <Eye className="h-4 w-4" />
+                          <Eye className="h-4 w-4" aria-hidden="true" />
                         </Button>
                         <Button
                           variant="ghost"
                           size="sm"
                           onClick={() => handleRename(video)}
+                          aria-label={`Rename video ${video.title}`}
                         >
-                          <Edit className="h-4 w-4" />
+                          <Edit className="h-4 w-4" aria-hidden="true" />
                         </Button>
                         <Button
                           variant="ghost"
                           size="sm"
                           onClick={() => handleDelete(video)}
+                          aria-label={`Delete video ${video.title}`}
                         >
-                          <Trash2 className="h-4 w-4" />
+                          <Trash2 className="h-4 w-4" aria-hidden="true" />
                         </Button>
                       </div>
                     </TableCell>

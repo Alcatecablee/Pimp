@@ -117,20 +117,20 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" role="main" aria-label="Admin Dashboard">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <header className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">Overview</h2>
+          <h1 className="text-3xl font-bold tracking-tight">Overview</h1>
           <p className="text-muted-foreground">
             Your video management dashboard
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2" role="toolbar" aria-label="Dashboard actions">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm">
-                <FileDown className="h-4 w-4 mr-2" />
+              <Button variant="outline" size="sm" aria-label="Export dashboard data">
+                <FileDown className="h-4 w-4 mr-2" aria-hidden="true" />
                 Export
               </Button>
             </DropdownMenuTrigger>
@@ -153,48 +153,49 @@ export default function AdminDashboard() {
               refetch();
               toast.success("Dashboard refreshed");
             }}
+            aria-label="Refresh dashboard data"
           >
-            <RefreshCw className="h-4 w-4 mr-2" />
+            <RefreshCw className="h-4 w-4 mr-2" aria-hidden="true" />
             Refresh
           </Button>
         </div>
-      </div>
+      </header>
 
       {/* Stats Cards */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
+      <section className="grid gap-4 md:grid-cols-2 lg:grid-cols-4" aria-label="Dashboard statistics">
+        <Card role="article" aria-labelledby="stat-videos">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Videos</CardTitle>
-            <Video className="h-4 w-4 text-muted-foreground" />
+            <CardTitle id="stat-videos" className="text-sm font-medium">Total Videos</CardTitle>
+            <Video className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{data?.totalVideos.toLocaleString()}</div>
+            <div className="text-2xl font-bold" aria-live="polite">{data?.totalVideos.toLocaleString()}</div>
             <p className="text-xs text-muted-foreground mt-1">
               Across all folders
             </p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card role="article" aria-labelledby="stat-folders">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Folders</CardTitle>
-            <FolderOpen className="h-4 w-4 text-muted-foreground" />
+            <CardTitle id="stat-folders" className="text-sm font-medium">Total Folders</CardTitle>
+            <FolderOpen className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{data?.totalFolders}</div>
+            <div className="text-2xl font-bold" aria-live="polite">{data?.totalFolders}</div>
             <p className="text-xs text-muted-foreground mt-1">
               Video collections
             </p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card role="article" aria-labelledby="stat-storage">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Storage</CardTitle>
-            <HardDrive className="h-4 w-4 text-muted-foreground" />
+            <CardTitle id="stat-storage" className="text-sm font-medium">Total Storage</CardTitle>
+            <HardDrive className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
+            <div className="text-2xl font-bold" aria-live="polite">
               {formatBytes(data?.totalStorage || 0)}
             </div>
             <p className="text-xs text-muted-foreground mt-1">
@@ -203,34 +204,34 @@ export default function AdminDashboard() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card role="article" aria-labelledby="stat-viewers">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Viewers</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
+            <CardTitle id="stat-viewers" className="text-sm font-medium">Active Viewers</CardTitle>
+            <Users className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{data?.activeViewers || 0}</div>
+            <div className="text-2xl font-bold" aria-live="polite">{data?.activeViewers || 0}</div>
             <p className="text-xs text-muted-foreground mt-1">
               Currently watching
             </p>
           </CardContent>
         </Card>
-      </div>
+      </section>
 
       {/* Folder Breakdown */}
-      <Card>
+      <Card role="region" aria-labelledby="folder-breakdown-title">
         <CardHeader>
-          <CardTitle>Videos by Folder</CardTitle>
+          <CardTitle id="folder-breakdown-title">Videos by Folder</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
+          <ul className="space-y-4" role="list">
             {data?.folderBreakdown.map((folder) => (
-              <div
+              <li
                 key={folder.folderId}
                 className="flex items-center justify-between border-b pb-3 last:border-0"
               >
                 <div className="flex items-center gap-3">
-                  <FolderOpen className="h-5 w-5 text-muted-foreground" />
+                  <FolderOpen className="h-5 w-5 text-muted-foreground" aria-hidden="true" />
                   <div>
                     <p className="font-medium">{folder.folderName}</p>
                     <p className="text-sm text-muted-foreground">
@@ -242,9 +243,9 @@ export default function AdminDashboard() {
                   <p className="font-medium">{formatBytes(folder.totalSize)}</p>
                   <p className="text-xs text-muted-foreground">storage</p>
                 </div>
-              </div>
+              </li>
             ))}
-          </div>
+          </ul>
         </CardContent>
       </Card>
 
