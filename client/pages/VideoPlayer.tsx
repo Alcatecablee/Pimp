@@ -1,11 +1,12 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { Video, VideoFolder } from "@shared/api";
 import { Header } from "@/components/Header";
 import { ThumbsUp, ThumbsDown, Share2, Download, MoreHorizontal, Folder } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { VideoPlayerControls } from "@/components/VideoPlayerControls";
 
 export default function VideoPlayer() {
   const { id } = useParams<{ id: string }>();
@@ -14,6 +15,87 @@ export default function VideoPlayer() {
   const [folder, setFolder] = useState<VideoFolder | null>(null);
   const [loading, setLoading] = useState(true);
   const [descriptionExpanded, setDescriptionExpanded] = useState(false);
+  
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+  const [playerOrigin, setPlayerOrigin] = useState<string>("");
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [volume, setVolume] = useState(100);
+  const [isMuted, setIsMuted] = useState(false);
+  const [playerReady, setPlayerReady] = useState(false);
+
+  // Send command to player
+  const sendPlayerCommand = useCallback((command: string, value?: number) => {
+    if (iframeRef.current && playerOrigin && playerReady) {
+      iframeRef.current.contentWindow?.postMessage({ command, value }, playerOrigin);
+    }
+  }, [playerOrigin, playerReady]);
+
+  // Handle player messages
+  useEffect(() => {
+    const handleMessage = (e: MessageEvent) => {
+      if (!playerOrigin || e.origin !== playerOrigin) return;
+
+      console.log('Player message:', e.data);
+
+      // Player ready
+      if (e.data.playerStatus === 'Ready') {
+        setPlayerReady(true);
+        if (e.data.duration) setDuration(e.data.duration);
+        // Auto-play on ready
+        setTimeout(() => {
+          sendPlayerCommand('play');
+          setIsPlaying(true);
+        }, 500);
+      }
+
+      // Playing state
+      if (e.data.playerStatus === 'Playing') {
+        setIsPlaying(true);
+      }
+
+      // Paused state
+      if (e.data.playerStatus === 'Paused') {
+        setIsPlaying(false);
+      }
+
+      // Current time update
+      if (e.data.currentTime !== undefined) {
+        setCurrentTime(e.data.currentTime);
+      }
+
+      // Duration update
+      if (e.data.duration !== undefined) {
+        setDuration(e.data.duration);
+      }
+
+      // Volume update
+      if (e.data.volume !== undefined) {
+        setVolume(e.data.volume);
+      }
+
+      // Muted update
+      if (e.data.muted !== undefined) {
+        setIsMuted(e.data.muted);
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, [playerOrigin, sendPlayerCommand]);
+
+  // Poll for current time
+  useEffect(() => {
+    if (!playerReady) return;
+
+    const interval = setInterval(() => {
+      sendPlayerCommand('getTime');
+      sendPlayerCommand('getStatus');
+    }, 500);
+
+    return () => clearInterval(interval);
+  }, [playerReady, sendPlayerCommand]);
 
   useEffect(() => {
     const fetchVideo = async () => {
@@ -94,13 +176,44 @@ export default function VideoPlayer() {
           {/* Main Content */}
           <div className="space-y-4">
             {/* Video Player */}
-            <div className="relative w-full aspect-video bg-black rounded-xl overflow-hidden">
+            <div className="relative w-full aspect-video bg-black rounded-xl overflow-hidden group">
               <iframe
-                src={`https://pib.upns.xyz/#${video.id}`}
+                ref={iframeRef}
+                src={`https://pib.upns.xyz/?api=all#${video.id}`}
                 className="w-full h-full"
                 allowFullScreen
                 allow="autoplay; encrypted-media"
                 title={video.title}
+                onLoad={() => {
+                  if (iframeRef.current) {
+                    const origin = new URL(iframeRef.current.src).origin;
+                    setPlayerOrigin(origin);
+                  }
+                }}
+              />
+              <VideoPlayerControls
+                isPlaying={isPlaying}
+                currentTime={currentTime}
+                duration={duration}
+                volume={volume}
+                isMuted={isMuted}
+                onPlayPause={() => {
+                  sendPlayerCommand(isPlaying ? 'pause' : 'play');
+                  setIsPlaying(!isPlaying);
+                }}
+                onSeek={(time) => {
+                  sendPlayerCommand('seek', time);
+                  setCurrentTime(time);
+                }}
+                onVolumeChange={(vol) => {
+                  sendPlayerCommand('volume', vol);
+                  setVolume(vol);
+                  if (vol > 0 && isMuted) setIsMuted(false);
+                }}
+                onMuteToggle={() => {
+                  sendPlayerCommand(isMuted ? 'unmute' : 'mute');
+                  setIsMuted(!isMuted);
+                }}
               />
             </div>
 
