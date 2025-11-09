@@ -43,14 +43,44 @@ import {
 } from "./routes/analytics";
 import { startBackgroundRefresh } from "./utils/background-refresh";
 import { initializeDatabase } from "./utils/database";
+import { setupAuth, isAuthenticated } from "./replitAuth";
+import { storage } from "./storage";
 
-export function createServer() {
+export async function createServer() {
   const app = express();
 
-  // Middleware
-  app.use(cors());
+  // Middleware - CORS with secure origin policy
+  const allowedOrigins = process.env.ALLOWED_ORIGINS
+    ? process.env.ALLOWED_ORIGINS.split(',')
+    : ['http://localhost:5000', 'https://*.replit.dev'];
+  
+  app.use(cors({
+    credentials: true,
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
+      
+      // Check if origin matches allowed patterns
+      const isAllowed = allowedOrigins.some(allowed => {
+        if (allowed.includes('*')) {
+          const pattern = new RegExp('^' + allowed.replace(/\*/g, '.*') + '$');
+          return pattern.test(origin);
+        }
+        return origin === allowed;
+      });
+      
+      if (isAllowed) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    }
+  }));
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
+
+  // Setup Replit Auth (must be before routes)
+  await setupAuth(app);
 
   // Example API routes
   app.get("/api/ping", (_req, res) => {
@@ -59,6 +89,18 @@ export function createServer() {
   });
 
   app.get("/api/demo", handleDemo);
+
+  // Auth routes - must be defined before protected routes
+  app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      res.json(user);
+    } catch (error) {
+      console.error("Error fetching user:", error);
+      res.status(500).json({ message: "Failed to fetch user" });
+    }
+  });
 
   // Video routes
   app.get("/api/videos", handleGetVideos);
@@ -75,21 +117,21 @@ export function createServer() {
   // Realtime stats
   app.get("/api/realtime", handleGetRealtime);
 
-  // Admin routes
-  app.get("/api/admin/overview", handleGetAdminOverview);
-  app.delete("/api/admin/videos/:id", handleDeleteVideo);
-  app.patch("/api/admin/videos/:id", handleRenameVideo);
-  app.post("/api/admin/videos/move", handleMoveVideosToFolder);
-  app.post("/api/admin/videos/bulk-delete", handleBulkDeleteVideos);
+  // Admin routes - Protected with authentication
+  app.get("/api/admin/overview", isAuthenticated, handleGetAdminOverview);
+  app.delete("/api/admin/videos/:id", isAuthenticated, handleDeleteVideo);
+  app.patch("/api/admin/videos/:id", isAuthenticated, handleRenameVideo);
+  app.post("/api/admin/videos/move", isAuthenticated, handleMoveVideosToFolder);
+  app.post("/api/admin/videos/bulk-delete", isAuthenticated, handleBulkDeleteVideos);
   
-  // Admin folder routes
-  app.get("/api/admin/folders", handleGetFolders);
-  app.post("/api/admin/folders", handleCreateFolder);
-  app.delete("/api/admin/folders/:id", handleDeleteFolder);
-  app.patch("/api/admin/folders/:id", handleRenameFolder);
+  // Admin folder routes - Protected with authentication
+  app.get("/api/admin/folders", isAuthenticated, handleGetFolders);
+  app.post("/api/admin/folders", isAuthenticated, handleCreateFolder);
+  app.delete("/api/admin/folders/:id", isAuthenticated, handleDeleteFolder);
+  app.patch("/api/admin/folders/:id", isAuthenticated, handleRenameFolder);
 
-  // Upload routes
-  app.get("/api/upload/credentials", getUploadCredentials);
+  // Upload routes - Protected with authentication
+  app.get("/api/upload/credentials", isAuthenticated, getUploadCredentials);
 
   // Playlist routes
   app.get("/api/playlists", getPlaylists);

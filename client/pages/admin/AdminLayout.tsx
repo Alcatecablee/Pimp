@@ -9,9 +9,13 @@ import {
   Menu,
   X,
   Upload,
+  LogOut,
+  User,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/use-toast";
 
 const navigation = [
   { name: "Dashboard", href: "/admin", icon: LayoutDashboard, end: true },
@@ -24,6 +28,39 @@ const navigation = [
 
 export default function AdminLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { isAuthenticated, isLoading, user } = useAuth();
+  const { toast } = useToast();
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      toast({
+        title: "Authentication Required",
+        description: "Please log in to access the admin panel...",
+        variant: "destructive",
+      });
+      setTimeout(() => {
+        window.location.href = "/api/login";
+      }, 500);
+    }
+  }, [isAuthenticated, isLoading, toast]);
+
+  // Show loading state while checking authentication
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Don't render if not authenticated (will redirect)
+  if (!isAuthenticated) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -84,11 +121,43 @@ export default function AdminLayout() {
             ))}
           </nav>
 
-          {/* Footer */}
-          <div className="p-4 border-t">
+          {/* Footer - User info and logout */}
+          <div className="p-4 border-t space-y-3">
+            {user && (
+              <div className="flex items-center gap-2 p-2 rounded-lg bg-accent/50">
+                {user.profileImageUrl ? (
+                  <img
+                    src={user.profileImageUrl}
+                    alt="Profile"
+                    className="w-8 h-8 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                    <User className="h-4 w-4 text-primary" />
+                  </div>
+                )}
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-medium truncate">
+                    {user.firstName || user.email || "Admin"}
+                  </p>
+                  <p className="text-xs text-muted-foreground truncate">
+                    {user.email}
+                  </p>
+                </div>
+              </div>
+            )}
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full"
+              onClick={() => (window.location.href = "/api/logout")}
+            >
+              <LogOut className="h-4 w-4 mr-2" />
+              Logout
+            </Button>
             <div className="text-xs text-muted-foreground">
               <p className="font-medium">VideoHub Admin</p>
-              <p className="mt-1">v1.0.0 - Phase 1</p>
+              <p className="mt-1">v1.0.0 - Phase 5</p>
             </div>
           </div>
         </div>
