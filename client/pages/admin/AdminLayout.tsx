@@ -11,6 +11,7 @@ import {
   Upload,
   LogOut,
   User,
+  Activity,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
@@ -23,6 +24,7 @@ const navigation = [
   { name: "Folders", href: "/admin/folders", icon: FolderOpen },
   { name: "Upload", href: "/admin/uploads", icon: Upload },
   { name: "Analytics", href: "/admin/analytics", icon: BarChart3 },
+  { name: "Health", href: "/admin/health", icon: Activity },
   { name: "Settings", href: "/admin/settings", icon: Settings },
 ];
 

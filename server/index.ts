@@ -45,6 +45,14 @@ import {
   getAnalyticsOverview,
   getStorageAnalytics,
 } from "./routes/admin-analytics";
+import {
+  handleGetSystemHealth,
+  handleGetEndpointMetrics,
+  handleGetRecentErrors,
+  handleResetMetrics,
+  trackRequest,
+  trackError,
+} from "./routes/admin-health";
 import { startBackgroundRefresh } from "./utils/background-refresh";
 import { initializeDatabase } from "./utils/database";
 import { setupAuth, isAuthenticated } from "./replitAuth";
@@ -84,6 +92,27 @@ export async function createServer() {
   }));
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
+
+  // Request tracking middleware
+  app.use((req, res, next) => {
+    const startTime = Date.now();
+    const originalSend = res.send;
+
+    res.send = function (data) {
+      const responseTime = Date.now() - startTime;
+      const success = res.statusCode >= 200 && res.statusCode < 400;
+      
+      trackRequest(req.path, success, responseTime);
+      
+      if (!success && res.statusCode >= 400) {
+        trackError(req.path, data?.toString() || 'Unknown error', res.statusCode);
+      }
+
+      return originalSend.call(this, data);
+    };
+
+    next();
+  });
 
   // Setup Replit Auth (must be before routes)
   await setupAuth(app);
@@ -157,6 +186,12 @@ export async function createServer() {
   // Admin analytics routes - Protected with authentication
   app.get("/api/admin/analytics/overview", isAuthenticated, getAnalyticsOverview);
   app.get("/api/admin/analytics/storage", isAuthenticated, getStorageAnalytics);
+
+  // Admin health routes - Protected with authentication
+  app.get("/api/admin/health", isAuthenticated, handleGetSystemHealth);
+  app.get("/api/admin/health/endpoints", isAuthenticated, handleGetEndpointMetrics);
+  app.get("/api/admin/health/errors", isAuthenticated, handleGetRecentErrors);
+  app.post("/api/admin/health/reset", isAuthenticated, handleResetMetrics);
 
   // Initialize database schemas on server startup
   initializeDatabase().catch((error) => {
