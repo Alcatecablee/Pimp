@@ -5,6 +5,10 @@
     {
       "source": "/api/:path*",
       "destination": "/api/index"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ],
   "functions": {
@@ -13,5 +17,11 @@
       "maxDuration": 30,
       "includeFiles": "dist/serverless/**"
     }
-  }
+  },
+  "crons": [
+    {
+      "path": "/api/refresh/now",
+      "schedule": "*/5 * * * *"
+    }
+  ]
 }
