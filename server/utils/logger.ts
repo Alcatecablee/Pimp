@@ -14,8 +14,10 @@ const isServerless = Boolean(
 
 export const logger = pino({
   level: process.env.LOG_LEVEL || (isDevelopment ? 'debug' : 'info'),
-  // Disable pino-pretty in serverless environments (it requires dynamic module loading)
-  transport: isDevelopment && !isServerless
+  // CRITICAL: Never use pino-pretty in serverless (Vercel, Netlify, AWS Lambda)
+  // It requires dynamic module loading which breaks serverless deployments
+  // Only use pretty printing in local development (non-serverless)
+  transport: !isServerless && isDevelopment
     ? {
         target: 'pino-pretty',
         options: {
