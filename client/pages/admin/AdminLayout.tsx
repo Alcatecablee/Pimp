@@ -18,8 +18,9 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth, signOut } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 const navigation = [
   { name: "Dashboard", href: "/admin", icon: LayoutDashboard, end: true },
@@ -40,6 +41,16 @@ export default function AdminLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { isAuthenticated, isLoading, user } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await signOut();
+    toast({
+      title: "Logged out",
+      description: "You have been logged out successfully",
+    });
+    navigate("/login");
+  };
 
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -50,7 +61,7 @@ export default function AdminLayout() {
         variant: "destructive",
       });
       setTimeout(() => {
-        window.location.href = "/api/login";
+        window.location.href = "/login";
       }, 500);
     }
   }, [isAuthenticated, isLoading, toast]);
@@ -135,23 +146,15 @@ export default function AdminLayout() {
           <div className="p-4 border-t space-y-3">
             {user && (
               <div className="flex items-center gap-2 p-2 rounded-lg bg-accent/50">
-                {user.profileImageUrl ? (
-                  <img
-                    src={user.profileImageUrl}
-                    alt="Profile"
-                    className="w-8 h-8 rounded-full object-cover"
-                  />
-                ) : (
-                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                    <User className="h-4 w-4 text-primary" />
-                  </div>
-                )}
+                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                  <User className="h-4 w-4 text-primary" />
+                </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-xs font-medium truncate">
-                    {user.firstName || user.email || "Admin"}
+                    {user.email || "Admin"}
                   </p>
                   <p className="text-xs text-muted-foreground truncate">
-                    {user.email}
+                    ID: {user.id?.substring(0, 8)}...
                   </p>
                 </div>
               </div>
@@ -160,7 +163,7 @@ export default function AdminLayout() {
               variant="outline"
               size="sm"
               className="w-full"
-              onClick={() => (window.location.href = "/api/logout")}
+              onClick={handleLogout}
             >
               <LogOut className="h-4 w-4 mr-2" />
               Logout

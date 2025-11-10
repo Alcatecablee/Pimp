@@ -1,29 +1,33 @@
-// Authentication hook for Replit Auth
-// Reference: blueprint:javascript_log_in_with_replit
+// Authentication hook for Supabase Auth
 import { useQuery } from "@tanstack/react-query";
-import type { User } from "@shared/schema";
+import { supabase } from "@/lib/supabase";
 
 export function useAuth() {
-  const { data: user, isLoading } = useQuery<User>({
-    queryKey: ["/api/auth/user"],
+  const { data: session, isLoading } = useQuery({
+    queryKey: ["auth-session"],
     queryFn: async () => {
-      const response = await fetch("/api/auth/user", {
-        credentials: "include",
-      });
-      if (!response.ok) {
-        if (response.status === 401) {
-          return null;
-        }
-        throw new Error(`${response.status}: ${response.statusText}`);
-      }
-      return response.json();
+      const { data: { session } } = await supabase.auth.getSession();
+      return session;
     },
     retry: false,
   });
 
   return {
-    user: user || null,
+    user: session?.user || null,
+    session,
     isLoading,
-    isAuthenticated: !!user,
+    isAuthenticated: !!session?.user,
   };
+}
+
+export async function signIn(email: string, password: string) {
+  return await supabase.auth.signInWithPassword({ email, password });
+}
+
+export async function signUp(email: string, password: string) {
+  return await supabase.auth.signUp({ email, password });
+}
+
+export async function signOut() {
+  return await supabase.auth.signOut();
 }

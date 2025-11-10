@@ -69,7 +69,7 @@ import { startBackgroundRefresh } from "./utils/background-refresh";
 import { startLogRetentionCleanup } from "./utils/log-retention";
 import { startScheduledBackup } from "./utils/scheduled-backup";
 import { initializeDatabase } from "./utils/database";
-import { setupAuth, isAuthenticated } from "./replitAuth";
+import { setupAuth, isAuthenticated } from "./supabaseAuth";
 import { storage } from "./storage";
 import { requestIdMiddleware, pinoHttpMiddleware } from "./middleware/request-id";
 

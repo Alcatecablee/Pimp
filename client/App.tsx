@@ -11,6 +11,8 @@ import { lazy, Suspense } from "react";
 import Index from "./pages/Index";
 import VideoPlayer from "./pages/VideoPlayer";
 import NotFound from "./pages/NotFound";
+import Login from "./pages/Login";
+import Profile from "./pages/Profile";
 import AdminLayout from "./pages/admin/AdminLayout";
 
 const AdminDashboard = lazy(() => import("./pages/admin/Dashboard"));
@@ -46,6 +48,8 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/video/:id" element={<VideoPlayer />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/profile" element={<Profile />} />
           
           {/* Admin routes with lazy loading */}
           <Route path="/admin" element={<AdminLayout />}>
