@@ -1,0 +1,36 @@
+08:21:22.367 Running build in Washington, D.C., USA (East) – iad1
+08:21:22.367 Build machine configuration: 2 cores, 8 GB
+08:21:22.499 Cloning github.com/Alcatecablee/Pimo (Branch: main, Commit: 6f530b6)
+08:21:22.833 Cloning completed: 334.000ms
+08:21:23.437 Restored build cache from previous deployment (CfxPptwcsLHVcL9hzSLZAu4P8Pvp)
+08:21:24.795 Running "vercel build"
+08:21:25.261 Vercel CLI 48.9.0
+08:21:26.051 Installing dependencies...
+08:21:29.105 npm warn deprecated @esbuild-kit/esm-loader@2.6.5: Merged into tsx: https://tsx.is
+08:21:29.212 npm warn deprecated @esbuild-kit/core-utils@3.3.2: Merged into tsx: https://tsx.is
+08:21:30.765 
+08:21:30.765 added 99 packages in 4s
+08:21:30.766 
+08:21:30.766 91 packages are looking for funding
+08:21:30.766   run `npm fund` for details
+08:21:30.914 
+08:21:30.914 > build
+08:21:30.915 > npm run build:client && npm run build:server && npm run build:serverless
+08:21:30.915 
+08:21:31.045 
+08:21:31.047 > build:client
+08:21:31.048 > vite build
+08:21:31.048 
+08:21:32.139 [31mfailed to load config from /vercel/path0/vite.config.ts[39m
+08:21:32.143 [31merror during build:
+08:21:32.144 Error: DATABASE_URL must be set. Please add your Supabase DATABASE_URL to Replit secrets.
+08:21:32.144     at file:///vercel/path0/node_modules/.vite-temp/vite.config.ts.timestamp-1762755691436-ecf1a5fa6aa.mjs:2279:9
+08:21:32.144     at ModuleJob.run (node:internal/modules/esm/module_job:343:25)
+08:21:32.144     at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:665:26)
+08:21:32.144     at async loadConfigFromBundledFile (file:///vercel/path0/node_modules/vite/dist/node/chunks/config.js:36521:12)
+08:21:32.144     at async bundleAndLoadConfigFile (file:///vercel/path0/node_modules/vite/dist/node/chunks/config.js:36415:17)
+08:21:32.144     at async loadConfigFromFile (file:///vercel/path0/node_modules/vite/dist/node/chunks/config.js:36382:42)
+08:21:32.144     at async resolveConfig (file:///vercel/path0/node_modules/vite/dist/node/chunks/config.js:36031:22)
+08:21:32.144     at async createBuilder (file:///vercel/path0/node_modules/vite/dist/node/chunks/config.js:34494:19)
+08:21:32.145     at async CAC.<anonymous> (file:///vercel/path0/node_modules/vite/dist/node/cli.js:629:10)[39m
+08:21:32.183 Error: Command "npm run build" exited with 1
