@@ -43,20 +43,39 @@ const ARTIST_ALIASES: Record<string, string> = {
   "premlly prem": "Premly Prem",
 };
 
-async function fetchWithAuth(url: string) {
-  const response = await fetch(url, {
-    headers: {
-      "api-token": API_TOKEN!,
-      "Content-Type": "application/json",
-    },
-  });
+async function fetchWithAuth(url: string, retries = 5) {
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      const response = await fetch(url, {
+        headers: {
+          "api-token": API_TOKEN!,
+          "Content-Type": "application/json",
+        },
+      });
 
-  if (!response.ok) {
-    const error = await response.text();
-    throw new Error(`API error: ${response.status} ${error}`);
+      if (response.status === 429) {
+        // Rate limit - exponential backoff
+        const waitTime = Math.min(attempt * 5000, 30000); // Max 30 seconds
+        console.log(`  ⏳ Rate limit hit, waiting ${waitTime/1000}s... (attempt ${attempt}/${retries})`);
+        await new Promise(resolve => setTimeout(resolve, waitTime));
+        continue;
+      }
+
+      if (!response.ok) {
+        const error = await response.text();
+        throw new Error(`API error: ${response.status} ${error}`);
+      }
+
+      return response.json();
+    } catch (error) {
+      if (attempt === retries) throw error;
+      const waitTime = attempt * 2000;
+      console.log(`  ⚠️ Fetch error, retrying in ${waitTime/1000}s...`);
+      await new Promise(resolve => setTimeout(resolve, waitTime));
+    }
   }
-
-  return response.json();
+  
+  throw new Error(`Failed to fetch after ${retries} attempts`);
 }
 
 async function getAllFolders(): Promise<Folder[]> {
@@ -67,16 +86,39 @@ async function getAllFolders(): Promise<Folder[]> {
   return folders;
 }
 
+async function getAllVideosFromFolder(folderId: string): Promise<any[]> {
+  const folderVideos: any[] = [];
+  let page = 1;
+  const perPage = 100;
+  
+  while (true) {
+    const url = `${UPNSHARE_API_BASE}/video/folder/${folderId}?page=${page}&perPage=${perPage}`;
+    const response = await fetchWithAuth(url);
+    const videos = Array.isArray(response) ? response : response.data || [];
+    
+    if (videos.length === 0) break;
+    
+    folderVideos.push(...videos);
+    
+    if (videos.length < perPage) break; // Last page
+    page++;
+    
+    // Add delay between pages to respect rate limits
+    await new Promise(resolve => setTimeout(resolve, 1000));
+  }
+  
+  return folderVideos;
+}
+
 async function getAllVideos(): Promise<Video[]> {
-  console.log("🎬 Fetching all videos...");
+  console.log("🎬 Fetching all videos with pagination...");
   const folders = await getAllFolders();
   const allVideos: Video[] = [];
+  let totalCount = 0;
 
   for (const folder of folders) {
     try {
-      const url = `${UPNSHARE_API_BASE}/video/folder/${folder.id}?page=1&perPage=1000`;
-      const response = await fetchWithAuth(url);
-      const videos = Array.isArray(response) ? response : response.data || [];
+      const videos = await getAllVideosFromFolder(folder.id);
       
       for (const video of videos) {
         allVideos.push({
@@ -86,6 +128,7 @@ async function getAllVideos(): Promise<Video[]> {
         });
       }
       
+      totalCount += videos.length;
       console.log(`  ✓ Fetched ${videos.length} videos from "${folder.name}"`);
       await new Promise(resolve => setTimeout(resolve, 200));
     } catch (error) {
@@ -143,24 +186,41 @@ function extractAllArtistNames(title: string): string[] {
 }
 
 function isUnrenamedVideo(title: string): boolean {
+  const trimmed = title.trim();
+  
   // Check for short names (less than 15 characters, likely codes)
-  if (title.length < 15) {
+  if (trimmed.length < 15) {
     return true;
   }
   
-  // Check for hexadecimal or code-like patterns
-  // Examples: 0_ee52c60e2a7d7563a71c776d946336c0.mp4, BrjMntK.mp4
+  // Check for hexadecimal or UUID-like patterns (with or without hyphens)
+  // Examples: 
+  // - 0_ee52c60e2a7d7563a71c776d946336c0.mp4
+  // - 1d081c64-a764-4418-a14c-076a666b6c61
+  // - BrjMntK.mp4
+  // - f21d8946-ccca-4e94-b89c-13a6aa83ce17
   const codePatterns = [
-    /^[0-9a-f]{7,}\.mp4$/i,  // Long hex strings
-    /^[0-9]+_[0-9a-f]{10,}/i, // Pattern like 0_ee52c60e...
-    /^[a-z]{5,10}\.mp4$/i,    // Short random letters like BrjMntK.mp4
-    /^[A-Z]{5,10}\.mp4$/,     // Short uppercase random letters
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}/i,  // UUID pattern (8-4-4-...)
+    /^[0-9]+_[0-9a-f]{10,}/i,                  // Pattern like 0_ee52c60e...
+    /^[a-z]{5,10}\.mp4$/i,                     // Short random letters like BrjMntK.mp4
+    /^[A-Z]{5,10}\.mp4$/,                      // Short uppercase random letters
+    /^[0-9a-f]{8}[^a-z\s]/i,                   // Starts with 8 hex chars followed by non-letter
   ];
   
   for (const pattern of codePatterns) {
-    if (pattern.test(title.trim())) {
+    if (pattern.test(trimmed)) {
       return true;
     }
+  }
+  
+  // Check if it's mostly hex characters (likely a code/hash)
+  const alphanumericOnly = trimmed.replace(/[^a-z0-9]/gi, '');
+  const hexCharCount = (alphanumericOnly.match(/[0-9a-f]/gi) || []).length;
+  const hexRatio = hexCharCount / alphanumericOnly.length;
+  
+  // If more than 70% hex characters, it's likely a code
+  if (alphanumericOnly.length > 8 && hexRatio > 0.7) {
+    return true;
   }
   
   return false;
@@ -206,47 +266,76 @@ function normalizeArtistName(name: string): string | null {
     .join(" ");
 }
 
-async function createFolder(name: string): Promise<Folder> {
+async function createFolder(name: string, retries = 3): Promise<Folder> {
   console.log(`  📁 Creating folder: "${name}"`);
   
-  const response = await fetch(`${UPNSHARE_API_BASE}/video/folder`, {
-    method: "POST",
-    headers: {
-      "api-token": API_TOKEN!,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ name }),
-  });
-
-  if (!response.ok) {
-    const error = await response.text();
-    throw new Error(`Failed to create folder: ${response.status} ${error}`);
-  }
-
-  const data = await response.json();
-  await new Promise(resolve => setTimeout(resolve, 200));
-  return data;
-}
-
-async function moveVideoToFolder(videoId: string, folderId: string): Promise<boolean> {
-  try {
-    const response = await fetch(
-      `${UPNSHARE_API_BASE}/video/folder/${folderId}/link`,
-      {
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      const response = await fetch(`${UPNSHARE_API_BASE}/video/folder`, {
         method: "POST",
         headers: {
           "api-token": API_TOKEN!,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ videoId }),
-      }
-    );
+        body: JSON.stringify({ name }),
+      });
 
-    await new Promise(resolve => setTimeout(resolve, 100));
-    return response.ok;
-  } catch (error) {
-    return false;
+      if (response.status === 429) {
+        // Rate limit hit - wait longer before retry
+        const waitTime = attempt * 5000; // 5s, 10s, 15s
+        console.log(`  ⏳ Rate limit hit, waiting ${waitTime/1000}s before retry ${attempt}/${retries}...`);
+        await new Promise(resolve => setTimeout(resolve, waitTime));
+        continue;
+      }
+
+      if (!response.ok) {
+        const error = await response.text();
+        throw new Error(`Failed to create folder: ${response.status} ${error}`);
+      }
+
+      const data = await response.json();
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Increased delay
+      return data;
+    } catch (error) {
+      if (attempt === retries) throw error;
+      console.log(`  ⚠️ Attempt ${attempt} failed, retrying...`);
+      await new Promise(resolve => setTimeout(resolve, 2000));
+    }
   }
+  
+  throw new Error(`Failed to create folder after ${retries} attempts`);
+}
+
+async function moveVideoToFolder(videoId: string, folderId: string, retries = 3): Promise<boolean> {
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      const response = await fetch(
+        `${UPNSHARE_API_BASE}/video/folder/${folderId}/link`,
+        {
+          method: "POST",
+          headers: {
+            "api-token": API_TOKEN!,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ videoId }),
+        }
+      );
+
+      if (response.status === 429) {
+        // Rate limit hit - wait before retry
+        const waitTime = attempt * 3000; // 3s, 6s, 9s
+        await new Promise(resolve => setTimeout(resolve, waitTime));
+        continue;
+      }
+
+      await new Promise(resolve => setTimeout(resolve, 500)); // Increased delay
+      return response.ok;
+    } catch (error) {
+      if (attempt === retries) return false;
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+  }
+  return false;
 }
 
 async function main() {
@@ -296,36 +385,46 @@ async function main() {
 
   // Create folders for artists and organize videos
   console.log("📁 Creating folders and organizing videos...\n");
+  console.log(`⏳ This will take a while due to API rate limits. Processing ${videosByArtist.size} artists...\n`);
   
   let foldersCreated = 0;
   let videosMovedSuccess = 0;
   let videosMovedFailed = 0;
+  let artistsProcessed = 0;
 
   for (const [artistName, videos] of videosByArtist) {
+    artistsProcessed++;
+    console.log(`[${artistsProcessed}/${videosByArtist.size}] Processing "${artistName}"...`);
+    
     const folderKey = artistName.toLowerCase();
     let folderId: string;
 
     if (folderMap.has(folderKey)) {
       folderId = folderMap.get(folderKey)!;
-      console.log(`✓ Using existing folder: "${artistName}" (${videos.length} videos)`);
+      console.log(`  ✓ Using existing folder (${videos.length} videos)`);
     } else {
       const newFolder = await createFolder(artistName);
       folderId = newFolder.id;
       folderMap.set(folderKey, folderId);
       foldersCreated++;
-      console.log(`  ✓ Created folder: "${artistName}"`);
+      console.log(`  ✓ Created folder`);
     }
 
-    // Move videos to this folder
+    // Move videos to this folder with progress updates
+    let movedCount = 0;
     for (const video of videos) {
       const success = await moveVideoToFolder(video.id, folderId);
       if (success) {
         videosMovedSuccess++;
+        movedCount++;
       } else {
         videosMovedFailed++;
       }
     }
-    console.log(`  ✓ Moved ${videos.length} videos to "${artistName}"`);
+    console.log(`  ✓ Moved ${movedCount}/${videos.length} videos successfully\n`);
+    
+    // Add delay between processing artists to respect rate limits
+    await new Promise(resolve => setTimeout(resolve, 2000));
   }
 
   // Handle uncategorized videos

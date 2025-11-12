@@ -1,0 +1,163 @@
+🎯 Starting video organization by artist...
+
+🎬 Fetching all videos with pagination...
+📂 Fetching all folders...
+  Found 48 existing folders
+  ✓ Fetched 397 videos from "Mzansi OnlyFans"
+  ✓ Fetched 1144 videos from "Onyfans PorninBlack"
+  ✓ Fetched 5 videos from "Xoli Mfeka"
+  ✓ Fetched 0 videos from "Mzansi Man Says Magosha"
+  ✓ Fetched 0 videos from "0918da9a"
+  ✓ Fetched 0 videos from "569de3d0"
+  ✓ Fetched 0 videos from "Premlly Prem Erotic Dance"
+  ✓ Fetched 0 videos from "Only"
+  ✓ Fetched 0 videos from "5ef7463c"
+  ✓ Fetched 0 videos from "97b4c067"
+  ✓ Fetched 7 videos from "Premlly Prem"
+  ✓ Fetched 0 videos from "4f966559"
+  ✓ Fetched 1 videos from "141a8fdd"
+  ✓ Fetched 0 videos from "Upskirt Porn In Zimbabwe"
+  ✓ Fetched 0 videos from "Premly Prem Facial On"
+  ✓ Fetched 1 videos from "Kira"
+  ✓ Fetched 0 videos from "Xoli Mfeka Masturbating With"
+  ✓ Fetched 0 videos from "Simplypiiper"
+  ✓ Fetched 0 videos from "Watch Xoli Mfeka Shower Tease"
+  ✓ Fetched 0 videos from "Mzansi Xoli Mfeka"
+  ✓ Fetched 0 videos from "Simplypiiper Fingering Xoli Mfeka"
+  ✓ Fetched 109 videos from "Needs Manual Review"
+  ✓ Fetched 1 videos from "A62a8c0f"
+  ✓ Fetched 1 videos from "E2784831"
+  ✓ Fetched 1 videos from "Ec637662"
+  ✓ Fetched 1 videos from "Dd2980d1"
+  ✓ Fetched 1 videos from "E3e0cac9"
+  ✓ Fetched 0 videos from "A5d84cb5"
+  ✓ Fetched 1 videos from "646f9c57"
+  ✓ Fetched 0 videos from "6de6e305"
+  ✓ Fetched 0 videos from "Pipipiper"
+  ✓ Fetched 0 videos from "Hailee Starr"
+  ✓ Fetched 1 videos from "1d081c64"
+  ✓ Fetched 1 videos from "F21d8946"
+  ✓ Fetched 1 videos from "C010472c"
+  ✓ Fetched 1 videos from "Cfa49a6d"
+  ✓ Fetched 1 videos from "Ce7eddf5"
+  ✓ Fetched 1 videos from "Bab76854"
+  ✓ Fetched 1 videos from "10a7a2a2"
+  ✓ Fetched 1 videos from "79664d4c"
+  ✓ Fetched 1 videos from "763d8b86"
+  ✓ Fetched 1 videos from "3ff54e07"
+  ✓ Fetched 1 videos from "Bd760f48"
+  ✓ Fetched 8 videos from "Premly Prem"
+  ✗ Error fetching videos from folder 8tfgv: Error: API error: 429 {"message": "Rate limit exceeded"}
+    at fetchWithAuth (/home/runner/workspace/scripts/organize-all-videos-by-artist.ts:56:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async getAllVideosFromFolder (/home/runner/workspace/scripts/organize-all-videos-by-artist.ts:77:22)
+    at async getAllVideos (/home/runner/workspace/scripts/organize-all-videos-by-artist.ts:101:22)
+    at async main (/home/runner/workspace/scripts/organize-all-videos-by-artist.ts:325:21)
+  ✓ Fetched 1 videos from "Efbe32b8"
+  ✗ Error fetching videos from folder bgldh: Error: API error: 429 {"message": "Rate limit exceeded"}
+    at fetchWithAuth (/home/runner/workspace/scripts/organize-all-videos-by-artist.ts:56:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async getAllVideosFromFolder (/home/runner/workspace/scripts/organize-all-videos-by-artist.ts:77:22)
+    at async getAllVideos (/home/runner/workspace/scripts/organize-all-videos-by-artist.ts:101:22)
+    at async main (/home/runner/workspace/scripts/organize-all-videos-by-artist.ts:325:21)
+  ✗ Error fetching videos from folder geuj9: Error: API error: 429 {"message": "Rate limit exceeded"}
+    at fetchWithAuth (/home/runner/workspace/scripts/organize-all-videos-by-artist.ts:56:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async getAllVideosFromFolder (/home/runner/workspace/scripts/organize-all-videos-by-artist.ts:77:22)
+    at async getAllVideos (/home/runner/workspace/scripts/organize-all-videos-by-artist.ts:101:22)
+    at async main (/home/runner/workspace/scripts/organize-all-videos-by-artist.ts:325:21)
+
+✅ Total videos found: 1690
+
+🔍 Analyzing video titles to identify artists...
+
+📊 Analysis Summary:
+  Total videos: 1690
+  Unique artists identified: 81
+  Uncategorized videos: 1578
+
+👥 Artists identified:
+  - Premly Prem: 8 videos
+  - Premlly Prem: 7 videos
+  - Briana Monique: 4 videos
+  - Emmanuel Lustin: 4 videos
+  - Xoli Mfeka: 4 videos
+  - Kira: 3 videos
+  - Black: 2 videos
+  - Free Pressure: 2 videos
+  - Diamond Banks: 2 videos
+  - Nynylew: 2 videos
+  - Charlotte Lavish: 2 videos
+  - Gogo Fukme: 2 videos
+  - Sly Diggler: 2 videos
+  - Ebony Black Ass: 1 videos
+  - Cataleya Backshots: 1 videos
+  - Cataleya Riding Condom: 1 videos
+  - Horny: 1 videos
+  - Puddingpot Ass: 1 videos
+  - Coloured Fucking: 1 videos
+  - Zay After Dark: 1 videos
+  - Zanzou: 1 videos
+  - Cvvy7: 1 videos
+  - African Black Girl Fucking: 1 videos
+  - Queen Tahshaar Nice: 1 videos
+  - 18 Y: 1 videos
+  - Perfect Body Of Petite Tumi: 1 videos
+  - Petite Tumi Getting Horny: 1 videos
+  - Tahshaar: 1 videos
+  - Petite Tumi Twerking: 1 videos
+  - Huge Ass Petitetumi Riding: 1 videos
+  - Emmanuel Lustin Erotic Massage: 1 videos
+  - More Creampies: 1 videos
+  - Fucking Creamy Ebony Pussy: 1 videos
+  - Couple Gets Wild: 1 videos
+  - Riding: 1 videos
+  - Emmanuel Lustin Chilling: 1 videos
+  - The Time For Ass Connie: 1 videos
+  - Teammillz Blowjob: 1 videos
+  - Suzy Marie: 1 videos
+  - Chryssyvsdream Strippers Oil Asses: 1 videos
+  - Tits Ebony Blowjob Fuckshow W: 1 videos
+  - Tvvv: 1 videos
+  - Erotic Medusa: 1 videos
+  - Serenity Love: 1 videos
+  - Theeministalli: 1 videos
+  - Elsie Vs Mazee The Goat: 1 videos
+  - Ricky Johnson: 1 videos
+  - Honey Drizzle: 1 videos
+  - Cassie: 1 videos
+  - Thais Gomes Caligola Filmes: 1 videos
+  - Slimasstink Enjoys Sucking Cock: 1 videos
+  - May Hashira Close: 1 videos
+  - Turnupmonsters Eating: 1 videos
+  - Sly Diggler Vs Jayyyellaa Massage: 1 videos
+  - Skyla Sun Got It Going On: 1 videos
+  - Damn Passion Black: 1 videos
+  - Gem Jewels: 1 videos
+  - Cherie Amour: 1 videos
+  - Honeydipped Dc: 1 videos
+  - Blahgigi: 1 videos
+  - Kayyykitty: 1 videos
+  - Quincy Roee: 1 videos
+  - Spoiled Princess: 1 videos
+  - Jayla Page Sucking: 1 videos
+  - Montana: 1 videos
+  - Muva Phoenix: 1 videos
+  - Biggmontaaxxx Handjob: 1 videos
+  - Drstretchxxx Aka Stretchingvitals: 1 videos
+  - Zoey Reyes: 1 videos
+  - Beast: 1 videos
+  - Miss Dominican: 1 videos
+  - Omgzada: 1 videos
+  - Jayla Page: 1 videos
+  - Thathirsttrapper: 1 videos
+  - Juicy Peach Bangbros Willow Ryder: 1 videos
+  - Yum The Boss Vs Rocket Powers Eat Ass: 1 videos
+  - Ms Yummy: 1 videos
+  - Lalakoi Sucking: 1 videos
+  - Guccithirdleg: 1 videos
+  - Gorgeous Briana Monique: 1 videos
+  - Slow: 1 videos
+
+📂 Fetching all folders...
+❌ Error: API error: 429 {"message": "Rate limit exceeded"}
