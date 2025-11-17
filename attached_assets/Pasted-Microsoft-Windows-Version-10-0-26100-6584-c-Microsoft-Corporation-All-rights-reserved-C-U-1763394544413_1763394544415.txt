@@ -1,0 +1,76 @@
+Microsoft Windows [Version 10.0.26100.6584]
+(c) Microsoft Corporation. All rights reserved.
+
+C:\Users\Clive>cat /home/Alcatec/conf/web/api.server.mzansiporns.com/nginx.conf
+'cat' is not recognized as an internal or external command,
+operable program or batch file.
+
+C:\Users\Clive>ssh ssh root@45.83.122.61
+ssh: Could not resolve hostname ssh: No such host is known.
+
+C:\Users\Clive>ssh root@45.83.122.61
+root@45.83.122.61's password:
+Permission denied, please try again.
+root@45.83.122.61's password:
+Linux server.mzansiporns.com 5.15.0-139-generic #149~20.04.1-Ubuntu SMP Wed Apr 16 08:29:56 UTC 2025 x86_64
+
+The programs included with the Debian GNU/Linux system are free software;
+the exact distribution terms for each program are described in the
+individual files in /usr/share/doc/*/copyright.
+
+Debian GNU/Linux comes with ABSOLUTELY NO WARRANTY, to the extent
+permitted by applicable law.
+Last login: Sun Nov 16 15:37:03 2025 from 197.184.105.244
+root@server:~# cd /home/Alcatec/web/api.server.mzansiporns.com/nodeapp/Pimo
+root@server:/home/Alcatec/web/api.server.mzansiporns.com/nodeapp/Pimo# cat /home/Alcatec/conf/web/api.server.mzansiporns.com/nginx.conf
+server {
+    listen      45.83.122.61:80;
+    server_name api.server.mzansiporns.com ;
+
+    include /home/Alcatec/conf/web/api.server.mzansiporns.com/nginx.forcessl.conf*;
+
+    error_log  /var/log/apache2/domains/api.server.mzansiporns.com.error.log error;
+
+    location / {
+        #single node
+        #proxy_pass http://127.0.0.1:3000;
+
+        #unix socket mode
+        proxy_pass      http://unix:/home/Alcatec/web/api.server.mzansiporns.com/nodeapp/app.sock:$request_uri;
+
+
+        location ~* ^.+\.(css|htm|html|js|mjs|json|xml|apng|avif|bmp|cur|gif|ico|jfif|jpg|jpeg|pjp|pjpeg|png|svg|tif|tiff|webp|aac|caf|flac|m4a|midi|mp3|ogg|opus|wav|3gp|av1|avi|m4v|mkv|mov|mpg|mpeg|mp4|mp4v|webm|otf|ttf|woff|woff2|doc|docx|odf|odp|ods|odt|pdf|ppt|pptx|rtf|txt|xls|xlsx|7z|bz2|gz|rar|tar|tgz|zip|apk|appx|bin|dmg|exe|img|iso|jar|msi|webmanifest)$ {
+            root           /home/Alcatec/web/api.server.mzansiporns.com/public_html;
+            access_log     /var/log/apache2/domains/api.server.mzansiporns.com.log combined;
+            access_log     /var/log/apache2/domains/api.server.mzansiporns.com.bytes bytes;
+            expires        max;
+            try_files      $uri @fallback;
+        }
+    }
+
+    location /error/ {
+        alias   /home/Alcatec/web/api.server.mzansiporns.com/document_errors/;
+    }
+
+    location @fallback {
+        #single node
+        #proxy_pass     http://127.0.0.1:3000;
+
+        #unix socket mode
+        proxy_pass      http://unix:/home/Alcatec/web/api.server.mzansiporns.com/nodeapp/app.sock:/$1;
+    }
+
+    location ~ /\.ht    {return 404;}
+    location ~ /\.svn/  {return 404;}
+    location ~ /\.git/  {return 404;}
+    location ~ /\.hg/   {return 404;}
+    location ~ /\.bzr/  {return 404;}
+    location ~ /\.(?!well-known\/|file) {
+       deny all;
+       return 404;
+    }
+
+    include /home/Alcatec/conf/web/api.server.mzansiporns.com/nginx.conf_*;
+
+}
+root@server:/home/Alcatec/web/api.server.mzansiporn
