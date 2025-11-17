@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { apiFetch } from "@/lib/api-config";
 
 interface AnalyticsOptions {
   videoId: string;
@@ -14,7 +15,7 @@ export function useAnalytics() {
 
   const startSession = async (videoId: string) => {
     try {
-      const response = await fetch("/api/analytics/session/start", {
+      const response = await apiFetch("/api/analytics/session/start", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ videoId }),
@@ -39,7 +40,7 @@ export function useAnalytics() {
     if (!event) lastProgressUpdate.current = now;
 
     try {
-      await fetch("/api/analytics/session/progress", {
+      await apiFetch("/api/analytics/session/progress", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -58,7 +59,7 @@ export function useAnalytics() {
     if (!sessionId) return;
 
     try {
-      await fetch("/api/analytics/session/end", {
+      await apiFetch("/api/analytics/session/end", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ sessionId }),

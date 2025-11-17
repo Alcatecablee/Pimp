@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiFetch } from "@/lib/api-config";
 import {
   Dialog,
   DialogContent,
@@ -40,7 +41,7 @@ export function PlaylistManager({ currentVideoId, onPlaylistSelect }: PlaylistMa
   const { data } = useQuery<{ playlists: Playlist[] }>({
     queryKey: ["playlists"],
     queryFn: async () => {
-      const response = await fetch("/api/playlists");
+      const response = await apiFetch("/api/playlists");
       if (!response.ok) throw new Error("Failed to fetch playlists");
       return response.json();
     },
@@ -49,7 +50,7 @@ export function PlaylistManager({ currentVideoId, onPlaylistSelect }: PlaylistMa
   // Create playlist mutation
   const createMutation = useMutation({
     mutationFn: async (data: { name: string; description: string; videoIds: string[] }) => {
-      const response = await fetch("/api/playlists", {
+      const response = await apiFetch("/api/playlists", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
@@ -72,7 +73,7 @@ export function PlaylistManager({ currentVideoId, onPlaylistSelect }: PlaylistMa
   // Delete playlist mutation
   const deleteMutation = useMutation({
     mutationFn: async (playlistId: string) => {
-      const response = await fetch(`/api/playlists/${playlistId}`, {
+      const response = await apiFetch(`/api/playlists/${playlistId}`, {
         method: "DELETE",
       });
       if (!response.ok) throw new Error("Failed to delete playlist");
@@ -90,7 +91,7 @@ export function PlaylistManager({ currentVideoId, onPlaylistSelect }: PlaylistMa
   const addToPlaylistMutation = useMutation({
     mutationFn: async (playlistId: string) => {
       if (!currentVideoId) throw new Error("No video selected");
-      const response = await fetch(`/api/playlists/${playlistId}/videos`, {
+      const response = await apiFetch(`/api/playlists/${playlistId}/videos`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ videoId: currentVideoId }),

@@ -1,5 +1,6 @@
 import { useState, useCallback, useRef } from "react";
 import * as Upload from "tus-js-client";
+import { apiFetch } from "@/lib/api-config";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -93,7 +94,7 @@ export function UploadManager({ folders, onUploadComplete }: UploadManagerProps)
 
   const startUpload = async (uploadItem: UploadItem) => {
     try {
-      const response = await fetch("/api/upload/credentials");
+      const response = await apiFetch("/api/upload/credentials");
       if (!response.ok) {
         throw new Error("Failed to get upload credentials");
       }
