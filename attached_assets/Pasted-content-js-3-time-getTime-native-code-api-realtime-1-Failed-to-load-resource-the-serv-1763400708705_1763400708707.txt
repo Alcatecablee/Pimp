@@ -1,0 +1,81 @@
+content.js:3 time: ƒ getTime() { [native code] }
+/api/realtime:1  Failed to load resource: the server responded with a status of 504 ()
+/api/realtime:1  Failed to load resource: the server responded with a status of 504 ()
+/api/videos:1  Failed to load resource: the server responded with a status of 504 ()
+index-BaDFAZj1.js:10 Error fetching videos: Error: HTTP 504: 
+    at B (index-BaDFAZj1.js:10:116271)
+B @ index-BaDFAZj1.js:10
+/api/realtime:1  Failed to load resource: the server responded with a status of 504 ()
+realtime:1  Failed to load resource: the server responded with a status of 504 ()
+realtime:1  Failed to load resource: the server responded with a status of 504 ()
+index-BaDFAZj1.js:10  GET https://mpz-beta.vercel.app/api/realtime 504 (Gateway Timeout)
+M @ index-BaDFAZj1.js:10
+(anonymous) @ index-BaDFAZj1.js:10
+index-BaDFAZj1.js:10  GET https://mpz-beta.vercel.app/api/realtime 504 (Gateway Timeout)
+M @ index-BaDFAZj1.js:10
+(anonymous) @ index-BaDFAZj1.js:10
+index-BaDFAZj1.js:10  GET https://mpz-beta.vercel.app/api/realtime 504 (Gateway Timeout)
+M @ index-BaDFAZj1.js:10
+(anonymous) @ index-BaDFAZj1.js:10
+index-BaDFAZj1.js:10  GET https://mpz-beta.vercel.app/api/realtime 504 (Gateway Timeout)
+M @ index-BaDFAZj1.js:10
+(anonymous) @ index-BaDFAZj1.js:10
+index-BaDFAZj1.js:10  GET https://mpz-beta.vercel.app/api/realtime 504 (Gateway Timeout)
+M @ index-BaDFAZj1.js:10
+(anonymous) @ index-BaDFAZj1.js:10
+index-BaDFAZj1.js:10  GET https://mpz-beta.vercel.app/api/realtime 504 (Gateway Timeout)
+M @ index-BaDFAZj1.js:10
+(anonymous) @ index-BaDFAZj1.js:10
+index-BaDFAZj1.js:10  GET https://mpz-beta.vercel.app/api/realtime 504 (Gateway Timeout)
+M @ index-BaDFAZj1.js:10
+(anonymous) @ index-BaDFAZj1.js:10
+index-BaDFAZj1.js:10  GET https://mpz-beta.vercel.app/api/realtime 504 (Gateway Timeout)
+M @ index-BaDFAZj1.js:10
+(anonymous) @ index-BaDFAZj1.js:10
+index-BaDFAZj1.js:10  GET https://mpz-beta.vercel.app/api/realtime 504 (Gateway Timeout)
+M @ index-BaDFAZj1.js:10
+(anonymous) @ index-BaDFAZj1.js:10
+index-BaDFAZj1.js:10  GET https://mpz-beta.vercel.app/api/realtime 504 (Gateway Timeout)
+M @ index-BaDFAZj1.js:10
+(anonymous) @ index-BaDFAZj1.js:10
+index-BaDFAZj1.js:10  GET https://mpz-beta.vercel.app/api/realtime 504 (Gateway Timeout)
+M @ index-BaDFAZj1.js:10
+(anonymous) @ index-BaDFAZj1.js:10
+index-BaDFAZj1.js:10  GET https://mpz-beta.vercel.app/api/realtime 504 (Gateway Timeout)
+M @ index-BaDFAZj1.js:10
+(anonymous) @ index-BaDFAZj1.js:10
+index-BaDFAZj1.js:10  GET https://mpz-beta.vercel.app/api/realtime 504 (Gateway Timeout)
+M @ index-BaDFAZj1.js:10
+(anonymous) @ index-BaDFAZj1.js:10
+index-BaDFAZj1.js:10  GET https://mpz-beta.vercel.app/api/realtime 504 (Gateway Timeout)
+M @ index-BaDFAZj1.js:10
+(anonymous) @ index-BaDFAZj1.js:10
+index-BaDFAZj1.js:10  GET https://mpz-beta.vercel.app/api/realtime 504 (Gateway Timeout)
+M @ index-BaDFAZj1.js:10
+(anonymous) @ index-BaDFAZj1.js:10
+index-BaDFAZj1.js:10  GET https://mpz-beta.vercel.app/api/realtime 504 (Gateway Timeout)
+M @ index-BaDFAZj1.js:10
+(anonymous) @ index-BaDFAZj1.js:10
+index-BaDFAZj1.js:10  GET https://mpz-beta.vercel.app/api/realtime 504 (Gateway Timeout)
+M @ index-BaDFAZj1.js:10
+(anonymous) @ index-BaDFAZj1.js:10
+index-BaDFAZj1.js:10  GET https://mpz-beta.vercel.app/api/realtime 504 (Gateway Timeout)
+M @ index-BaDFAZj1.js:10
+(anonymous) @ index-BaDFAZj1.js:10
+index-BaDFAZj1.js:10  GET https://mpz-beta.vercel.app/api/realtime 504 (Gateway Timeout)
+M @ index-BaDFAZj1.js:10
+(anonymous) @ index-BaDFAZj1.js:10
+index-BaDFAZj1.js:10  GET https://mpz-beta.vercel.app/api/realtime 504 (Gateway Timeout)
+M @ index-BaDFAZj1.js:10
+(anonymous) @ index-BaDFAZj1.js:10
+index-BaDFAZj1.js:10  GET https://mpz-beta.vercel.app/api/realtime 504 (Gateway Timeout)
+M @ index-BaDFAZj1.js:10
+(anonymous) @ index-BaDFAZj1.js:10
+index-BaDFAZj1.js:10 [Violation] 'setInterval' handler took 69ms
+index-BaDFAZj1.js:10  GET https://mpz-beta.vercel.app/api/realtime 504 (Gateway Timeout)
+M @ index-BaDFAZj1.js:10
+(anonymous) @ index-BaDFAZj1.js:10
+index-BaDFAZj1.js:10 [Violation] 'setInterval' handler took 81ms
+index-BaDFAZj1.js:10  GET https://mpz-beta.vercel.app/api/realtime 504 (Gateway Timeout)
+M @ index-BaDFAZj1.js:10
+(anonymous) @ index-BaDFAZj1.js:10
