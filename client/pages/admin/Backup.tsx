@@ -45,6 +45,11 @@ export default function Backup() {
 
   const { data: backupInfo, isLoading, refetch } = useQuery<BackupInfo>({
     queryKey: ['/api/admin/backup/info'],
+    queryFn: async () => {
+      const response = await apiFetch('/api/admin/backup/info');
+      if (!response.ok) throw new Error('Failed to fetch backup info');
+      return response.json();
+    },
     refetchInterval: 30000, // Refresh every 30 seconds
   });
 
