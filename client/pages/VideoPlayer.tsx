@@ -9,6 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import { VideoPlayerControls } from "@/components/VideoPlayerControls";
 import { useAnalytics } from "@/hooks/use-analytics";
 import { PlaylistManager } from "@/components/PlaylistManager";
+import { apiFetch } from "@/lib/api-config";
 
 export default function VideoPlayer() {
   const { id } = useParams<{ id: string }>();
@@ -123,9 +124,9 @@ export default function VideoPlayer() {
       try {
         setLoading(true);
         const [videoResponse, videosResponse, realtimeResponse] = await Promise.all([
-          fetch(`/api/videos/${id}`),
-          fetch(`/api/videos`),
-          fetch(`/api/realtime`).catch(() => null)
+          apiFetch(`/api/videos/${id}`),
+          apiFetch(`/api/videos`),
+          apiFetch(`/api/realtime`).catch(() => null)
         ]);
 
         if (!videoResponse.ok) {
@@ -177,7 +178,7 @@ export default function VideoPlayer() {
 
     const interval = setInterval(async () => {
       try {
-        const response = await fetch(`/api/realtime`);
+        const response = await apiFetch(`/api/realtime`);
         if (response.ok) {
           const data: RealtimeResponse = await response.json();
           const videoStats = data.data?.find((item) => item.id === id);

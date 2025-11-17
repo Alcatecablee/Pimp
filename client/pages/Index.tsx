@@ -7,6 +7,7 @@ import { Loader2, AlertCircle, ChevronLeft, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { apiFetch } from "@/lib/api-config";
 
 interface PaginationMeta {
   page: number;
@@ -79,7 +80,7 @@ export default function Index() {
     const TAG_RETRY_DELAY = 2000; // 2 seconds between retries
     
     try {
-      const response = await fetch("/api/tags");
+      const response = await apiFetch("/api/tags");
       if (response.ok) {
         const data = await response.json();
         setAllTags(data.tags || []);
@@ -101,7 +102,7 @@ export default function Index() {
 
   const fetchRealtimeStats = async () => {
     try {
-      const response = await fetch("/api/realtime");
+      const response = await apiFetch("/api/realtime");
       if (response.ok) {
         const data: RealtimeResponse = await response.json();
         const statsMap = new Map<string, number>();
@@ -149,7 +150,7 @@ export default function Index() {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT);
 
-      const response = await fetch(`/api/videos/paginated?${params}`, {
+      const response = await apiFetch(`/api/videos/paginated?${params}`, {
         signal: controller.signal,
       });
 

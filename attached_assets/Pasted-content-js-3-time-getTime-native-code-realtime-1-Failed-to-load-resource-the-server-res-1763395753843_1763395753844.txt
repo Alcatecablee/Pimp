@@ -1,0 +1,54 @@
+content.js:3 time: ƒ getTime() { [native code] }
+realtime:1  Failed to load resource: the server responded with a status of 504 ()
+index-BaDFAZj1.js:10  GET https://mpz-beta.vercel.app/api/realtime 504 (Gateway Timeout)
+M @ index-BaDFAZj1.js:10
+(anonymous) @ index-BaDFAZj1.js:10
+index-BaDFAZj1.js:10  GET https://mpz-beta.vercel.app/api/realtime 504 (Gateway Timeout)
+M @ index-BaDFAZj1.js:10
+(anonymous) @ index-BaDFAZj1.js:10
+index-BaDFAZj1.js:10  GET https://mpz-beta.vercel.app/api/videos 504 (Gateway Timeout)
+B @ index-BaDFAZj1.js:10
+B @ index-BaDFAZj1.js:10
+await in B
+B @ index-BaDFAZj1.js:10
+await in B
+B @ index-BaDFAZj1.js:10
+index-BaDFAZj1.js:10 Error fetching videos: Error: HTTP 504: 
+    at B (index-BaDFAZj1.js:10:116271)
+B @ index-BaDFAZj1.js:10
+await in B
+B @ index-BaDFAZj1.js:10
+await in B
+B @ index-BaDFAZj1.js:10
+await in B
+B @ index-BaDFAZj1.js:10
+[Violation] Forced reflow while executing JavaScript took 30ms
+index-BaDFAZj1.js:10  GET https://mpz-beta.vercel.app/api/realtime 504 (Gateway Timeout)
+M @ index-BaDFAZj1.js:10
+(anonymous) @ index-BaDFAZj1.js:10
+
+
+Windows PowerShell
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+Install the latest PowerShell for new features and improvements! https://aka.ms/PSWindows
+
+PS C:\Users\Clive> curl https://api.server.mzansiporns.com/api/videos | head -20
+head : The term 'head' is not recognized as the name of a cmdlet, function, script file, or operable program. Check
+the spelling of the name, or if a path was included, verify that the path is correct and try again.
+At line:1 char:54
++ curl https://api.server.mzansiporns.com/api/videos | head -20
++                                                      ~~~~
+    + CategoryInfo          : ObjectNotFound: (head:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+
+PS C:\Users\Clive> curl https://api.server.mzansiporns.com/api/ping
+curl : The request was aborted: Could not create SSL/TLS secure channel.
+At line:1 char:1
++ curl https://api.server.mzansiporns.com/api/ping
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidOperation: (System.Net.HttpWebRequest:HttpWebRequest) [Invoke-WebRequest], WebExc
+   eption
+    + FullyQualifiedErrorId : WebCmdletWebResponseException,Microsoft.PowerShell.Commands.InvokeWebRequestCommand
+
+PS C:\Users\Clive>
