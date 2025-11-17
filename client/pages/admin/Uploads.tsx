@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { apiFetch } from "@/lib/api-config";
 import { UploadManager } from "@/components/UploadManager";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
@@ -15,7 +16,7 @@ export default function Uploads() {
   const { data: folders, isLoading, refetch } = useQuery<{ folders: Folder[] }>({
     queryKey: ["admin-folders"],
     queryFn: async () => {
-      const response = await fetch("/api/admin/folders");
+      const response = await apiFetch("/api/admin/folders");
       if (!response.ok) {
         throw new Error("Failed to fetch folders");
       }

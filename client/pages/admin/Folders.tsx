@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiFetch } from "@/lib/api-config";
 import {
   Folder,
   Plus,
@@ -66,7 +67,7 @@ export default function Folders() {
   const { data, isLoading, error } = useQuery<FolderStats>({
     queryKey: ["admin", "folders"],
     queryFn: async () => {
-      const response = await fetch("/api/admin/folders");
+      const response = await apiFetch("/api/admin/folders");
       if (!response.ok) {
         throw new Error("Failed to fetch folders");
       }
@@ -77,7 +78,7 @@ export default function Folders() {
 
   const deleteMutation = useMutation({
     mutationFn: async (folderId: string) => {
-      const response = await fetch(`/api/admin/folders/${folderId}`, {
+      const response = await apiFetch(`/api/admin/folders/${folderId}`, {
         method: "DELETE",
       });
       if (!response.ok) {
@@ -100,7 +101,7 @@ export default function Folders() {
 
   const renameMutation = useMutation({
     mutationFn: async ({ folderId, name }: { folderId: string; name: string }) => {
-      const response = await fetch(`/api/admin/folders/${folderId}`, {
+      const response = await apiFetch(`/api/admin/folders/${folderId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name }),
@@ -126,7 +127,7 @@ export default function Folders() {
 
   const createMutation = useMutation({
     mutationFn: async (name: string) => {
-      const response = await fetch("/api/admin/folders", {
+      const response = await apiFetch("/api/admin/folders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name }),

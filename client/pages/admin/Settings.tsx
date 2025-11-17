@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiFetch } from "@/lib/api-config";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,7 +28,7 @@ export default function Settings() {
   const { data: refreshStatus, refetch: refetchStatus } = useQuery({
     queryKey: ["refresh-status"],
     queryFn: async () => {
-      const response = await fetch("/api/refresh/status");
+      const response = await apiFetch("/api/refresh/status");
       if (!response.ok) throw new Error("Failed to fetch refresh status");
       return response.json();
     },
@@ -37,7 +38,7 @@ export default function Settings() {
   // Mutation for triggering manual refresh
   const refreshMutation = useMutation({
     mutationFn: async () => {
-      const response = await fetch("/api/refresh/now", {
+      const response = await apiFetch("/api/refresh/now", {
         method: "POST",
       });
       if (!response.ok) throw new Error("Failed to trigger refresh");

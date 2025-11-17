@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { apiFetch } from '@/lib/api-config';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -157,7 +158,7 @@ export default function Logs() {
         ...(search && { search }),
       });
 
-      const response = await fetch(`/api/admin/logs/export?${exportParams}`, {
+      const response = await apiFetch(`/api/admin/logs/export?${exportParams}`, {
         method: 'POST',
         credentials: 'include',
       });
@@ -187,7 +188,7 @@ export default function Logs() {
         ...(level && { level }),
       });
 
-      const response = await fetch(`/api/admin/logs?${clearParams}`, {
+      const response = await apiFetch(`/api/admin/logs?${clearParams}`, {
         method: 'DELETE',
         credentials: 'include',
       });

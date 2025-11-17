@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { apiFetch } from "@/lib/api-config";
 import { Loader2, RefreshCw, Video, FolderOpen, HardDrive, Users, FileDown } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -36,7 +37,7 @@ export default function AdminDashboard() {
   const { data, isLoading, error, refetch } = useQuery<AdminOverview>({
     queryKey: ["admin-overview"],
     queryFn: async () => {
-      const response = await fetch("/api/admin/overview");
+      const response = await apiFetch("/api/admin/overview");
       if (!response.ok) {
         throw new Error("Failed to fetch admin overview");
       }

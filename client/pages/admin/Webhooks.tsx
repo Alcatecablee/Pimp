@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiFetch } from "@/lib/api-config";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -53,7 +54,7 @@ export default function Webhooks() {
   const { data, isLoading, error } = useQuery<WebhooksResponse>({
     queryKey: ["webhooks"],
     queryFn: async () => {
-      const response = await fetch("/api/admin/webhooks");
+      const response = await apiFetch("/api/admin/webhooks");
       if (!response.ok) throw new Error("Failed to fetch webhooks");
       return response.json();
     },
@@ -61,7 +62,7 @@ export default function Webhooks() {
 
   const createMutation = useMutation({
     mutationFn: async (webhookData: Partial<WebhookConfig>) => {
-      const response = await fetch("/api/admin/webhooks", {
+      const response = await apiFetch("/api/admin/webhooks", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(webhookData),
@@ -81,7 +82,7 @@ export default function Webhooks() {
 
   const updateMutation = useMutation({
     mutationFn: async ({ id, data }: { id: string; data: Partial<WebhookConfig> }) => {
-      const response = await fetch(`/api/admin/webhooks/${id}`, {
+      const response = await apiFetch(`/api/admin/webhooks/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
@@ -101,7 +102,7 @@ export default function Webhooks() {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      const response = await fetch(`/api/admin/webhooks/${id}`, {
+      const response = await apiFetch(`/api/admin/webhooks/${id}`, {
         method: "DELETE",
       });
       if (!response.ok) throw new Error("Failed to delete webhook");
@@ -119,7 +120,7 @@ export default function Webhooks() {
 
   const testMutation = useMutation({
     mutationFn: async (id: string) => {
-      const response = await fetch(`/api/admin/webhooks/${id}/test`, {
+      const response = await apiFetch(`/api/admin/webhooks/${id}/test`, {
         method: "POST",
       });
       if (!response.ok) throw new Error("Failed to test webhook");

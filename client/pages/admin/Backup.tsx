@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { apiFetch } from '@/lib/api-config';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -58,7 +59,7 @@ export default function Backup() {
         includeUsers: includeUsers.toString(),
       });
 
-      const response = await fetch(`/api/admin/backup/export?${params}`, {
+      const response = await apiFetch(`/api/admin/backup/export?${params}`, {
         credentials: 'include',
       });
 

@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import { apiFetch } from '@/lib/api-config';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -134,7 +135,7 @@ export default function Health() {
 
   const handleResetMetrics = async () => {
     try {
-      const response = await fetch('/api/admin/health/reset', {
+      const response = await apiFetch('/api/admin/health/reset', {
         method: 'POST',
         credentials: 'include',
       });

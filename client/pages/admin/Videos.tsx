@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiFetch } from "@/lib/api-config";
 import { useState, useMemo, useRef } from "react";
 import { Video, VideosResponse } from "@shared/api";
 import { useKeyboardShortcuts } from "@/hooks/use-keyboard-shortcuts";
@@ -110,7 +111,7 @@ export default function VideosManagement() {
   const { data, isLoading, error } = useQuery<VideosResponse>({
     queryKey: ["videos"],
     queryFn: async () => {
-      const response = await fetch("/api/videos");
+      const response = await apiFetch("/api/videos");
       if (!response.ok) throw new Error("Failed to fetch videos");
       return response.json();
     },
@@ -118,7 +119,7 @@ export default function VideosManagement() {
 
   const deleteMutation = useMutation({
     mutationFn: async (videoId: string) => {
-      const response = await fetch(`/api/admin/videos/${videoId}`, {
+      const response = await apiFetch(`/api/admin/videos/${videoId}`, {
         method: "DELETE",
       });
       if (!response.ok) throw new Error("Failed to delete video");
@@ -136,7 +137,7 @@ export default function VideosManagement() {
 
   const renameMutation = useMutation({
     mutationFn: async ({ videoId, name }: { videoId: string; name: string }) => {
-      const response = await fetch(`/api/admin/videos/${videoId}`, {
+      const response = await apiFetch(`/api/admin/videos/${videoId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name }),
@@ -157,7 +158,7 @@ export default function VideosManagement() {
 
   const moveMutation = useMutation({
     mutationFn: async ({ videoIds, folderId }: { videoIds: string[]; folderId: string }) => {
-      const response = await fetch("/api/admin/videos/move", {
+      const response = await apiFetch("/api/admin/videos/move", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ videoIds, folderId }),
@@ -178,7 +179,7 @@ export default function VideosManagement() {
 
   const bulkDeleteMutation = useMutation({
     mutationFn: async (videoIds: string[]) => {
-      const response = await fetch("/api/admin/videos/bulk-delete", {
+      const response = await apiFetch("/api/admin/videos/bulk-delete", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ videoIds }),

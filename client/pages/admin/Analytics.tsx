@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { apiFetch } from "@/lib/api-config";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
@@ -94,7 +95,7 @@ export default function Analytics() {
   const { data, isLoading, error, refetch } = useQuery<AdminAnalyticsOverview>({
     queryKey: ["admin-analytics"],
     queryFn: async () => {
-      const response = await fetch("/api/admin/analytics/overview");
+      const response = await apiFetch("/api/admin/analytics/overview");
       if (!response.ok) {
         throw new Error("Failed to fetch analytics");
       }
@@ -106,7 +107,7 @@ export default function Analytics() {
   const { data: storageData, isLoading: storageLoading } = useQuery<StorageAnalytics>({
     queryKey: ["admin-storage"],
     queryFn: async () => {
-      const response = await fetch("/api/admin/analytics/storage");
+      const response = await apiFetch("/api/admin/analytics/storage");
       if (!response.ok) {
         throw new Error("Failed to fetch storage analytics");
       }

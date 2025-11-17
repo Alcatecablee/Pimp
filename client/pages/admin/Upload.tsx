@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef } from "react";
+import { apiFetch } from "@/lib/api-config";
 import { Upload as UploadIcon, X, Pause, Play, Trash2, CheckCircle, AlertCircle, FileVideo } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -41,7 +42,7 @@ export default function Upload() {
   const { data: folders } = useQuery<{ folders: FolderData[] }>({
     queryKey: ["admin", "folders"],
     queryFn: async () => {
-      const response = await fetch("/api/admin/folders");
+      const response = await apiFetch("/api/admin/folders");
       if (!response.ok) {
         throw new Error("Failed to fetch folders");
       }
@@ -108,7 +109,7 @@ export default function Upload() {
 
   const startUpload = async (task: UploadTask) => {
     try {
-      const credentialsResponse = await fetch("/api/upload/credentials");
+      const credentialsResponse = await apiFetch("/api/upload/credentials");
       if (!credentialsResponse.ok) {
         throw new Error("Failed to get upload credentials");
       }
