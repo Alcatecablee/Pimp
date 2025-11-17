@@ -125,8 +125,27 @@ After redeploying on Vercel:
 
 ## 📁 Files Modified
 
-- `vercel.json` - Removed serverless API configuration, frontend-only now
-- `client/lib/api-config.ts` - API configuration utility (already existed)
+### 1. `vercel.json`
+**Changes:**
+- Removed `/api/:path*` rewrite (no longer routing to serverless functions)
+- Removed `functions` configuration (no serverless API)
+- Removed `crons` configuration (cron jobs run on VPS, not Vercel)
+- Changed `buildCommand` from `npm run build` to `npm run build:client`
+
+**Why:** Vercel now only builds and serves the static frontend. No backend code is deployed to Vercel.
+
+### 2. `vite.config.ts`
+**Changes:**
+- Made `createServer` import dynamic (lazy-loaded only during development)
+- Changed from `import { createServer } from "./server"` at top level
+- To `const { createServer } = await import("./server")` inside expressPlugin
+
+**Why:** During production build, Vite doesn't need to load server code which requires Supabase env vars. The dynamic import prevents this.
+
+### 3. `client/lib/api-config.ts` _(No changes - already existed)_
+This file handles routing API calls to either:
+- **Development (Replit):** Relative URLs → local Express server
+- **Production (Vercel):** `VITE_API_URL` → VPS backend
 
 ---
 

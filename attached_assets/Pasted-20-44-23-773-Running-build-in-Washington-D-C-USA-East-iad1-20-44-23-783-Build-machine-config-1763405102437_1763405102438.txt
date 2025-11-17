@@ -1,0 +1,34 @@
+20:44:23.773 Running build in Washington, D.C., USA (East) – iad1
+20:44:23.783 Build machine configuration: 2 cores, 8 GB
+20:44:24.281 Cloning github.com/Alcatecablee/Pimo (Branch: main, Commit: f2c60ef)
+20:44:25.708 Cloning completed: 1.427s
+20:44:25.973 Restored build cache from previous deployment (7FWxTWuH6KrSwBTGEaGXcsmyfiWR)
+20:44:26.735 Running "vercel build"
+20:44:27.133 Vercel CLI 48.10.2
+20:44:27.907 Installing dependencies...
+20:44:29.575 
+20:44:29.576 up to date in 1s
+20:44:29.576 
+20:44:29.576 91 packages are looking for funding
+20:44:29.577   run `npm fund` for details
+20:44:29.723 
+20:44:29.725 > build
+20:44:29.725 > npm run build:client && npm run build:server && npm run build:serverless
+20:44:29.725 
+20:44:29.837 
+20:44:29.838 > build:client
+20:44:29.838 > vite build
+20:44:29.838 
+20:44:30.966 [31mfailed to load config from /vercel/path0/vite.config.ts[39m
+20:44:30.970 [31merror during build:
+20:44:30.970 Error: VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY must be set in environment variables
+20:44:30.971     at file:///vercel/path0/node_modules/.vite-temp/vite.config.ts.timestamp-1763405070238-5302e0fa6e876.mjs:3862:9
+20:44:30.971     at ModuleJob.run (node:internal/modules/esm/module_job:343:25)
+20:44:30.971     at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:665:26)
+20:44:30.971     at async loadConfigFromBundledFile (file:///vercel/path0/node_modules/vite/dist/node/chunks/config.js:36521:12)
+20:44:30.972     at async bundleAndLoadConfigFile (file:///vercel/path0/node_modules/vite/dist/node/chunks/config.js:36415:17)
+20:44:30.972     at async loadConfigFromFile (file:///vercel/path0/node_modules/vite/dist/node/chunks/config.js:36382:42)
+20:44:30.972     at async resolveConfig (file:///vercel/path0/node_modules/vite/dist/node/chunks/config.js:36031:22)
+20:44:30.972     at async createBuilder (file:///vercel/path0/node_modules/vite/dist/node/chunks/config.js:34494:19)
+20:44:30.972     at async CAC.<anonymous> (file:///vercel/path0/node_modules/vite/dist/node/cli.js:629:10)[39m
+20:44:31.012 Error: Command "npm run build" exited with 1

@@ -2,7 +2,6 @@ import { defineConfig, Plugin } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { fileURLToPath } from "url";
-import { createServer } from "./server";
 import { visualizer } from "rollup-plugin-visualizer";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -46,7 +45,8 @@ function expressPlugin(): Plugin {
     name: "express-plugin",
     apply: "serve", // Only apply during development (serve mode)
     async configureServer(server) {
-      // Await the async createServer function for Replit Auth
+      // Dynamically import server only during development
+      const { createServer } = await import("./server");
       const app = await createServer();
 
       // Add Express app as middleware to Vite dev server
