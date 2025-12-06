@@ -75,9 +75,20 @@ localPort = 40911
 externalPort = 3001
 
 [[ports]]
+localPort = 41537
+externalPort = 8081
+
+[[ports]]
 localPort = 42079
 externalPort = 6800
 
 [[ports]]
 localPort = 45091
 externalPort = 8000
+
+[userenv]
+
+[userenv.shared]
+VITE_SUPABASE_URL = "https://efzdvamelmwjubktjuqv.supabase.co"
+VITE_SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVmemR2YW1lbG13anVia3RqdXF2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI3NDAxMTgsImV4cCI6MjA3ODMxNjExOH0.sOS2qp0h7Dm4gnXVNsHV2OivlB6gwNyTMSKoqiTHQW4"
+UPNSHARE_API_TOKEN = "a152a183695062c518a63cb5"
