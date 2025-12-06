@@ -1,0 +1,62 @@
+root@host:/home/Alcatec/web/host.mzansiporns.com/nodeapp# cd / ome/Alcatec/web/host.mzansiporns.com/nodeapp
+pm2 start server/index.ts --name videohub-backend --interpreter npx --interpreter-args "tsx"
+pm2 save
+[PM2] Starting /home/Alcatec/web/host.mzansiporns.com/nodeapp/server/index.ts in fork_mode (1 instance)
+[PM2] Done.
+┌────┬────────────────────┬──────────┬──────┬───────────┬──────────┬──────────┐
+│ id │ name               │ mode     │ ↺    │ status    │ cpu      │ memory   │
+├────┼────────────────────┼──────────┼──────┼───────────┼──────────┼──────────┤
+root@host:/home/Alcatec/web/host.mzansiporns.com/nodeapp# sudo nginx -t.
+sudo systemctl restart nginx
+nginx: [warn] "ssl_stapling" ignored, no OCSP responder URL in the certificate "/home/Alcatec/conf/web/host.mzansiporns.com/ssl/host.mzansiporns.com.pem"ing current process list...
+nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+nginx: configuration file /etc/nginx/nginx.conf test is successfulo /hom
+root@host:/home/Alcatec/web/host.mzansiporns.com/nodeapp# sudo nginx -t
+sudo systemctl restart nginx
+nginx: [warn] "ssl_stapling" ignored, no OCSP responder URL in the certificate "/home/Alcatec/conf/web/host.mzansiporns.com/ssl/host.mzansiporns.com.pem"
+nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+nginx: configuration file /etc/nginx/nginx.conf test is successful
+root@host:/home/Alcatec/web/host.mzansiporns.com/nodeapp# cd /home/Alcatec/web/host.mzansiporns.com/nodeapp
+pm2 start server/index.ts --name videohub-backend --interpreter npx --interpreter-args "tsx"
+[PM2][ERROR] Script already launched, add -f option to force re-execution
+root@host:/home/Alcatec/web/host.mzansiporns.com/nodeapp# pm2 status
+pm2 logs videohub-backend --lines 20
+┌────┬────────────────────┬──────────┬──────┬───────────┬──────────┬──────────┐
+│ id │ name               │ mode     │ ↺    │ status    │ cpu      │ memory   │
+├────┼────────────────────┼──────────┼──────┼───────────┼──────────┼──────────┤
+│ 0  │ videohub-backend   │ fork     │ 112  │ online    │ 0%       │ 57.3mb   │
+└────┴────────────────────┴──────────┴──────┴───────────┴──────────┴──────────┘
+[TAILING] Tailing last 20 lines for [videohub-backend] process (change the value with --lines option)
+/root/.pm2/logs/videohub-backend-out.log last 20 lines:
+/root/.pm2/logs/videohub-backend-error.log last 20 lines:
+0|videohub | uture versions of @supabase/supabase-js. Please upgrade to Node.js 20 or later. For more information, visit: https://github.com/orgs/supabase/discussions/37217
+0|videohub | ⚠️  Node.js 18 and below are deprecated and will no longer be supported in future versions of @supabase/supabase-js. Please upgrade to Node.js 20 or later. For more information, visit: https://github.com/orgs/supabase/discussions/37217
+0|videohub | ⚠️  Node.js 18 and below are deprecated and will no longer be supported in future versions of @supabase/supabase-js. Please upgrade to Node.js 20 or later. For more information, visit: https://github.com/orgs/supabase/discussions/37217
+0|videohub | ⚠️  Node.js 18 and below are deprecated and will no longer be supported in future versions of @supabase/supabase-js. Please upgrade to Node.js 20 or later. For more information, visit: https://github.com/orgs/supabase/discussions/37217
+0|videohub | ⚠️  Node.js 18 and below are deprecated and will no longer be supported in future versions of @supabase/supabase-js. Please upgrade to Node.js 20 or later. For more information, visit: https://github.com/orgs/supabase/discussions/37217
+0|videohub | ⚠️  Node.js 18 and below are deprecated and will no longer be supported in future versions of @supabase/supabase-js. Please upgrade to Node.js 20 or later. For more information, visit: https://github.com/orgs/supabase/discussions/37217
+0|videohub | ⚠️  Node.js 18 and below are deprecated and will no longer be supported in future versions of @supabase/supabase-js. Please upgrade to Node.js 20 or later. For more information, visit: https://github.com/orgs/supabase/discussions/37217
+0|videohub | ⚠️  Node.js 18 and below are deprecated and will no longer be supported in future versions of @supabase/supabase-js. Please upgrade to Node.js 20 or later. For more information, visit: https://github.com/orgs/supabase/discussions/37217
+0|videohub | ⚠️  Node.js 18 and below are deprecated and will no longer be supported in future versions of @supabase/supabase-js. Please upgrade to Node.js 20 or later. For more information, visit: https://github.com/orgs/supabase/discussions/37217
+0|videohub | ⚠️  Node.js 18 and below are deprecated and will no longer be supported in future versions of @supabase/supabase-js. Please upgrade to Node.js 20 or later. For more information, visit: https://github.com/orgs/supabase/discussions/37217
+0|videohub | ⚠️  Node.js 18 and below are deprecated and will no longer be supported in future versions of @supabase/supabase-js. Please upgrade to Node.js 20 or later. For more information, visit: https://github.com/orgs/supabase/discussions/37217
+0|videohub | ⚠️  Node.js 18 and below are deprecated and will no longer be supported in future versions of @supabase/supabase-js. Please upgrade to Node.js 20 or later. For more information, visit: https://github.com/orgs/supabase/discussions/37217
+0|videohub | ⚠️  Node.js 18 and below are deprecated and will no longer be supported in future versions of @supabase/supabase-js. Please upgrade to Node.js 20 or later. For more information, visit: https://github.com/orgs/supabase/discussions/37217
+0|videohub | ⚠️  Node.js 18 and below are deprecated and will no longer be supported in future versions of @supabase/supabase-js. Please upgrade to Node.js 20 or later. For more information, visit: https://github.com/orgs/supabase/discussions/37217
+0|videohub | ⚠️  Node.js 18 and below are deprecated and will no longer be supported in future versions of @supabase/supabase-js. Please upgrade to Node.js 20 or later. For more information, visit: https://github.com/orgs/supabase/discussions/37217
+0|videohub | ⚠️  Node.js 18 and below are deprecated and will no longer be supported in future versions of @supabase/supabase-js. Please upgrade to Node.js 20 or later. For more information, visit: https://github.com/orgs/supabase/discussions/37217
+0|videohub | ⚠️  Node.js 18 and below are deprecated and will no longer be supported in future versions of @supabase/supabase-js. Please upgrade to Node.js 20 or later. For more information, visit: https://github.com/orgs/supabase/discussions/37217
+
+0|videohub-backend  | ⚠️  Node.js 18 and below are deprecated and will no longer be supported in future versions of @supabase/supabase-js. Please upgrade to Node.js 20 or later. For more information, visit: https://github.com/orgs/supabase/discussions/37217
+0|videohub-backend  | ⚠️  Node.js 18 and below are deprecated and will no longer be supported in future versions of @supabase/supabase-js. Please upgrade to Node.js 20 or later. For more information, visit: https://github.com/orgs/supabase/discussions/37217
+0|videohub-backend  | ⚠️  Node.js 18 and below are deprecated and will no longer be supported in future versions of @supabase/supabase-js. Please upgrade to Node.js 20 or later. For more information, visit: https://github.com/orgs/supabase/discussions/37217
+0|videohub-backend  | ⚠️  Node.js 18 and below are deprecated and will no longer be supported in future versions of @supabase/supabase-js. Please upgrade to Node.js 20 or later. For more information, visit: https://github.com/orgs/supabase/discussions/37217
+0|videohub-backend  | ⚠️  Node.js 18 and below are deprecated and will no longer be supported in future versions of @supabase/supabase-js. Please upgrade to Node.js 20 or later. For more information, visit: https://github.com/orgs/supabase/discussions/37217
+^C
+root@host:/home/Alcatec/web/host.mzansiporns.com/nodeapp# sudo nano /home/Alcatec/conf/web/host.mzansiporns.com/nginx.conf
+root@host:/home/Alcatec/web/host.mzansiporns.com/nodeapp# sudo nginx -t
+sudo systemctl restart nginx
+nginx: [warn] "ssl_stapling" ignored, no OCSP responder URL in the certificate "/home/Alcatec/conf/web/host.mzansiporns.com/ssl/host.mzansiporns.com.pem"
+nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+nginx: configuration file /etc/nginx/nginx.conf test is successful
+root@host:/home/Alcatec/web/host.mzansiporns.com/nodeapp# i need to create .Htaccess
