@@ -23,7 +23,7 @@ async function getHandler(): Promise<Handler> {
 }
 
 // Export handler that lazily initializes the app
-export default async (event: any, context: any) => {
+export default async (event: any, context: any, callback?: any) => {
   const h = await getHandler();
-  return h(event, context);
+  return h(event, context, callback || (() => {}));
 };

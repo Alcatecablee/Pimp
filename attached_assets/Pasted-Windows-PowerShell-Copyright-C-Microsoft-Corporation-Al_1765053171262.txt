@@ -1,0 +1,324 @@
+Windows PowerShell
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+Install the latest PowerShell for new features and improvements! https://aka.ms/PSWindows
+
+PS C:\Users\clive> ssh root@185.238.2.181
+root@185.238.2.181's password:
+Linux host.mzansiporns.com 5.15.0-139-generic #149~20.04.1-Ubuntu SMP Wed Apr 16 08:29:56 UTC 2025 x86_64
+
+The programs included with the Debian GNU/Linux system are free software;
+the exact distribution terms for each program are described in the
+individual files in /usr/share/doc/*/copyright.
+
+Debian GNU/Linux comes with ABSOLUTELY NO WARRANTY, to the extent
+permitted by applicable law.
+Last login: Sat Dec  6 22:14:29 2025 from 197.184.69.215
+root@host:~# pm2 status
+┌────┬────────────────────┬──────────┬──────┬───────────┬──────────┬──────────┐
+│ id │ name               │ mode     │ ↺    │ status    │ cpu      │ memory   │
+└────┴────────────────────┴──────────┴──────┴───────────┴──────────┴──────────┘
+root@host:~# sudo find /home/Alcatec/conf/web -name "*.conf" -exec echo "=== {} ===" \; -exec cat {} \;
+=== /home/Alcatec/conf/web/host.mzansiporns.com/nginx.hsts.conf ===
+add_header Strict-Transport-Security "max-age=31536000;" always;
+=== /home/Alcatec/conf/web/host.mzansiporns.com/nginx.ssl.conf ===
+#=========================================================================#
+# Default Web Domain Template                                             #
+# DO NOT MODIFY THIS FILE! CHANGES WILL BE LOST WHEN REBUILDING DOMAINS   #
+# https://hestiacp.com/docs/server-administration/web-templates.html      #
+#=========================================================================#
+
+server {
+        listen      185.238.2.181:443 ssl;
+        server_name host.mzansiporns.com ;
+        root        /home/Alcatec/web/host.mzansiporns.com/public_html;
+        access_log  /var/log/nginx/domains/host.mzansiporns.com.log combined;
+        access_log  /var/log/nginx/domains/host.mzansiporns.com.bytes bytes;
+        error_log   /var/log/nginx/domains/host.mzansiporns.com.error.log error;
+
+        ssl_certificate     /home/Alcatec/conf/web/host.mzansiporns.com/ssl/host.mzansiporns.com.pem;
+        ssl_certificate_key /home/Alcatec/conf/web/host.mzansiporns.com/ssl/host.mzansiporns.com.key;
+        ssl_stapling        on;
+        ssl_stapling_verify on;
+
+        # TLS 1.3 0-RTT anti-replay
+        if ($anti_replay = 307) { return 307 https://$host$request_uri; }
+        if ($anti_replay = 425) { return 425; }
+
+        include /home/Alcatec/conf/web/host.mzansiporns.com/nginx.hsts.conf*;
+
+        location ~ /\.(?!well-known\/|file) {
+                deny all;
+                return 404;
+        }
+
+        location / {
+                try_files $uri /index.html;
+
+                location ~* ^.+\.(jpeg|jpg|png|webp|gif|bmp|ico|svg|css|js)$ {
+                        expires max;
+                        fastcgi_hide_header "Set-Cookie";
+                }
+        }
+
+        location /error/ {
+                alias /home/Alcatec/web/host.mzansiporns.com/document_errors/;
+        }
+
+        include /home/Alcatec/conf/web/host.mzansiporns.com/nginx.ssl.conf_lets*;
+}
+=== /home/Alcatec/conf/web/host.mzansiporns.com/awstats.conf ===
+LogFile="/var/log/apache2/domains/host.mzansiporns.com.log"
+LogType=W
+LogFormat=1
+LogSeparator=" "
+SiteDomain="host.mzansiporns.com"
+HostAliases="localhost"
+DirData="/home/Alcatec/web/host.mzansiporns.com/stats"
+DirCgi="/vstats"
+DirIcons="/vstats/icon"
+AllowToUpdateStatsFromBrowser=0
+AllowFullYearView=2
+EnableLockForUpdate=1
+DNSStaticCacheFile="dnscache.txt"
+DNSLastUpdateCacheFile="dnscachelastupdate.txt"
+SkipDNSLookupFor=""
+AllowAccessFromWebToAuthenticatedUsersOnly=0
+AllowAccessFromWebToFollowingAuthenticatedUsers=""
+AllowAccessFromWebToFollowingIPAddresses=""
+CreateDirDataIfNotExists=0
+BuildHistoryFormat=text
+BuildReportFormat=html
+SaveDatabaseFilesWithPermissionsForEveryone=0
+PurgeLogFile=0
+ArchiveLogRecords=0
+KeepBackupOfHistoricFiles=1
+DefaultFile="index.php index.html"
+SkipHosts="127.0.0.1"
+SkipUserAgents=""
+SkipFiles=""
+SkipReferrersBlackList=""
+OnlyHosts=""
+OnlyUserAgents=""
+OnlyUsers=""
+OnlyFiles=""
+NotPageList="css js class gif jpg jpeg png bmp ico rss xml swf"
+ValidHTTPCodes="200 304"
+ValidSMTPCodes="1 250"
+AuthenticatedUsersNotCaseSensitive=0
+URLNotCaseSensitive=0
+URLWithAnchor=0
+URLQuerySeparators="?;"
+URLWithQuery=0
+URLWithQueryWithOnlyFollowingParameters=""
+URLWithQueryWithoutFollowingParameters=""
+URLReferrerWithQuery=0
+WarningMessages=1
+ErrorMessages=""
+DebugMessages=0
+NbOfLinesForCorruptedLog=50
+WrapperScript=""
+DecodeUA=0
+MiscTrackerUrl="/js/awstats_misc_tracker.js"
+UseFramesWhenCGI=1
+DetailedReportsOnNewWindows=1
+Expires=3600
+MaxRowsInHTMLOutput=1000
+Lang="auto"
+DirLang="./lang"
+ShowMenu=1
+ShowSummary=UVPHB
+ShowMonthStats=UVPHB
+ShowDaysOfMonthStats=VPHB
+ShowDaysOfWeekStats=PHB
+ShowHoursStats=PHB
+ShowDomainsStats=PHB
+ShowHostsStats=PHBL
+ShowAuthenticatedUsers=0
+ShowRobotsStats=HBL
+ShowWormsStats=0
+ShowEMailSenders=0
+ShowEMailReceivers=0
+ShowSessionsStats=1
+ShowPagesStats=PBEX
+ShowFileTypesStats=HB
+ShowFileSizesStats=0
+ShowDownloadsStats=HB
+ShowOSStats=1
+ShowBrowsersStats=1
+ShowScreenSizeStats=0
+ShowOriginStats=PH
+ShowKeyphrasesStats=1
+ShowKeywordsStats=1
+ShowMiscStats=a
+ShowHTTPErrorsStats=1
+ShowSMTPErrorsStats=0
+ShowClusterStats=0
+AddDataArrayMonthStats=1
+AddDataArrayShowDaysOfMonthStats=1
+AddDataArrayShowDaysOfWeekStats=1
+AddDataArrayShowHoursStats=1
+IncludeInternalLinksInOriginSection=0
+MaxNbOfDomain = 10
+MinHitDomain  = 1
+MaxNbOfHostsShown = 10
+MinHitHost    = 1
+MaxNbOfLoginShown = 10
+MinHitLogin   = 1
+MaxNbOfRobotShown = 10
+MinHitRobot   = 1
+MaxNbOfDownloadsShown = 10
+MinHitDownloads = 1
+MaxNbOfPageShown = 10
+MinHitFile    = 1
+MaxNbOfOsShown = 10
+MinHitOs      = 1
+MaxNbOfBrowsersShown = 10
+MinHitBrowser = 1
+MaxNbOfScreenSizesShown = 5
+MinHitScreenSize = 1
+MaxNbOfWindowSizesShown = 5
+MinHitWindowSize = 1
+MaxNbOfRefererShown = 10
+MinHitRefer   = 1
+MaxNbOfKeyphrasesShown = 10
+MinHitKeyphrase = 1
+MaxNbOfKeywordsShown = 10
+MinHitKeyword = 1
+MaxNbOfEMailsShown = 20
+MinHitEMail   = 1
+FirstDayOfWeek=0
+ShowFlagLinks=""
+ShowLinksOnUrl=1
+UseHTTPSLinkForUrl=""
+MaxLengthOfShownURL=64
+HTMLHeadSection=""
+HTMLEndSection=""
+MetaRobot=0
+Logo="awstats_logo6.png"
+LogoLink="http://awstats.sourceforge.net"
+BarWidth   = 260
+BarHeight  = 90
+StyleSheet=""
+ExtraTrackedRowsLimit=500
+=== /home/Alcatec/conf/web/host.mzansiporns.com/apache2.conf ===
+#=========================================================================#
+# Default Web Domain Template                                             #
+# DO NOT MODIFY THIS FILE! CHANGES WILL BE LOST WHEN REBUILDING DOMAINS   #
+# https://hestiacp.com/docs/server-administration/web-templates.html      #
+#=========================================================================#
+
+<VirtualHost 185.238.2.181:8080>
+
+    ServerName host.mzansiporns.com
+
+    ServerAdmin info@host.mzansiporns.com
+    DocumentRoot /home/Alcatec/web/host.mzansiporns.com/public_html
+    ScriptAlias /cgi-bin/ /home/Alcatec/web/host.mzansiporns.com/cgi-bin/
+    Alias /vstats/ /home/Alcatec/web/host.mzansiporns.com/stats/
+    Alias /error/ /home/Alcatec/web/host.mzansiporns.com/document_errors/
+    #SuexecUserGroup Alcatec Alcatec
+    CustomLog /var/log/apache2/domains/host.mzansiporns.com.bytes bytes
+    CustomLog /var/log/apache2/domains/host.mzansiporns.com.log combined
+    ErrorLog /var/log/apache2/domains/host.mzansiporns.com.error.log
+
+    IncludeOptional /home/Alcatec/conf/web/host.mzansiporns.com/apache2.forcessl.conf*
+
+    <Directory /home/Alcatec/web/host.mzansiporns.com/stats>
+        AllowOverride All
+    </Directory>
+    <Directory /home/Alcatec/web/host.mzansiporns.com/public_html>
+        AllowOverride All
+        Options +Includes -Indexes +ExecCGI
+    </Directory>
+
+    <FilesMatch \.php$>
+        SetHandler "proxy:unix:/run/php/php8.3-fpm-host.mzansiporns.com.sock|fcgi://localhost"
+    </FilesMatch>
+    SetEnvIf Authorization .+ HTTP_AUTHORIZATION=$0
+
+    IncludeOptional /home/Alcatec/conf/web/host.mzansiporns.com/apache2.conf_*
+    IncludeOptional /etc/apache2/conf.d/*.inc
+</VirtualHost>
+=== /home/Alcatec/conf/web/host.mzansiporns.com/apache2.ssl.conf ===
+#=========================================================================#
+# Default Web Domain Template                                             #
+# DO NOT MODIFY THIS FILE! CHANGES WILL BE LOST WHEN REBUILDING DOMAINS   #
+# https://hestiacp.com/docs/server-administration/web-templates.html      #
+#=========================================================================#
+
+<VirtualHost 185.238.2.181:8443>
+
+    ServerName host.mzansiporns.com
+
+    ServerAdmin info@host.mzansiporns.com
+    DocumentRoot /home/Alcatec/web/host.mzansiporns.com/public_html
+    ScriptAlias /cgi-bin/ /home/Alcatec/web/host.mzansiporns.com/cgi-bin/
+    Alias /vstats/ /home/Alcatec/web/host.mzansiporns.com/stats/
+    Alias /error/ /home/Alcatec/web/host.mzansiporns.com/document_errors/
+    #SuexecUserGroup Alcatec Alcatec
+    CustomLog /var/log/apache2/domains/host.mzansiporns.com.bytes bytes
+    CustomLog /var/log/apache2/domains/host.mzansiporns.com.log combined
+    ErrorLog /var/log/apache2/domains/host.mzansiporns.com.error.log
+    <Directory /home/Alcatec/web/host.mzansiporns.com/stats>
+        AllowOverride All
+    </Directory>
+    <Directory /home/Alcatec/web/host.mzansiporns.com/public_html>
+        AllowOverride All
+        SSLRequireSSL
+        Options +Includes -Indexes +ExecCGI
+        </Directory>
+    SSLEngine on
+    SSLVerifyClient none
+    SSLCertificateFile /home/Alcatec/conf/web/host.mzansiporns.com/ssl/host.mzansiporns.com.crt
+    SSLCertificateKeyFile /home/Alcatec/conf/web/host.mzansiporns.com/ssl/host.mzansiporns.com.key
+    SSLCertificateChainFile /home/Alcatec/conf/web/host.mzansiporns.com/ssl/host.mzansiporns.com.ca
+
+    <FilesMatch \.php$>
+        SetHandler "proxy:unix:/run/php/php8.3-fpm-host.mzansiporns.com.sock|fcgi://localhost"
+    </FilesMatch>
+    SetEnvIf Authorization .+ HTTP_AUTHORIZATION=$0
+
+    IncludeOptional /home/Alcatec/conf/web/host.mzansiporns.com/apache2.ssl.conf_*
+    IncludeOptional /etc/apache2/conf.d/*.inc
+</VirtualHost>
+=== /home/Alcatec/conf/web/host.mzansiporns.com/nginx.conf ===
+#=========================================================================#
+# Default Web Domain Template                                             #
+# DO NOT MODIFY THIS FILE! CHANGES WILL BE LOST WHEN REBUILDING DOMAINS   #
+# https://hestiacp.com/docs/server-administration/web-templates.html      #
+#=========================================================================#
+
+server {
+        listen      185.238.2.181:80;
+        server_name host.mzansiporns.com ;
+        root        /home/Alcatec/web/host.mzansiporns.com/public_html;
+        access_log  /var/log/nginx/domains/host.mzansiporns.com.log combined;
+        access_log  /var/log/nginx/domains/host.mzansiporns.com.bytes bytes;
+        error_log   /var/log/nginx/domains/host.mzansiporns.com.error.log error;
+
+        include /home/Alcatec/conf/web/host.mzansiporns.com/nginx.forcessl.conf*;
+
+        location ~ /\.(?!well-known\/|file) {
+                deny all;
+                return 404;
+        }
+
+        location / {
+                try_files $uri /index.html;
+
+                location ~* ^.+\.(jpeg|jpg|png|webp|gif|bmp|ico|svg|css|js)$ {
+                        expires max;
+                        fastcgi_hide_header "Set-Cookie";
+                }
+        }
+
+        location /error/ {
+                alias /home/Alcatec/web/host.mzansiporns.com/document_errors/;
+        }
+
+        include /home/Alcatec/conf/web/host.mzansiporns.com/nginx.conf_lets*;
+
+}
+root@host:~# sudo nano /home/Alcatec/conf/web/host.mzansiporns.com/nginx.conf
+root@host:~#

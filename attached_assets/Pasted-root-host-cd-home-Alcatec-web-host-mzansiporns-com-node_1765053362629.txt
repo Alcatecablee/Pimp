@@ -1,0 +1,470 @@
+root@host:~# cd /home/Alcatec/web/host.mzansiporns.com/nodeapp
+npm run build
+cp -r dist/* ../public_html/
+
+> build
+> tsc
+
+client/pages/admin/Analytics.tsx:236:18 - error TS2304: Cannot find name 'ResponsiveContainer'.
+
+236                 <ResponsiveContainer width="100%" height={300}>
+                     ~~~~~~~~~~~~~~~~~~~
+
+client/pages/admin/Analytics.tsx:237:20 - error TS2304: Cannot find name 'LineChart'.
+
+237                   <LineChart data={data.viewTrends}>
+                       ~~~~~~~~~
+
+client/pages/admin/Analytics.tsx:238:22 - error TS2304: Cannot find name 'CartesianGrid'.
+
+238                     <CartesianGrid strokeDasharray="3 3" />
+                         ~~~~~~~~~~~~~
+
+client/pages/admin/Analytics.tsx:239:22 - error TS2304: Cannot find name 'XAxis'.
+
+239                     <XAxis
+                         ~~~~~
+
+client/pages/admin/Analytics.tsx:243:22 - error TS2304: Cannot find name 'YAxis'.
+
+243                     <YAxis yAxisId="left" />
+                         ~~~~~
+
+client/pages/admin/Analytics.tsx:244:22 - error TS2304: Cannot find name 'YAxis'.
+
+244                     <YAxis yAxisId="right" orientation="right" />
+                         ~~~~~
+
+client/pages/admin/Analytics.tsx:245:22 - error TS2304: Cannot find name 'Tooltip'.
+
+245                     <Tooltip
+                         ~~~~~~~
+
+client/pages/admin/Analytics.tsx:252:22 - error TS2304: Cannot find name 'Legend'.
+
+252                     <Legend />
+                         ~~~~~~
+
+client/pages/admin/Analytics.tsx:253:22 - error TS2304: Cannot find name 'Line'.
+
+253                     <Line yAxisId="left" type="monotone" dataKey="views" stroke="#ef4444" name="Views" />
+                         ~~~~
+
+client/pages/admin/Analytics.tsx:254:22 - error TS2304: Cannot find name 'Line'.
+
+254                     <Line yAxisId="left" type="monotone" dataKey="uniqueViewers" stroke="#3b82f6" name="Unique Viewers" />
+                         ~~~~
+
+client/pages/admin/Analytics.tsx:255:22 - error TS2304: Cannot find name 'Line'.
+
+255                     <Line yAxisId="right" type="monotone" dataKey="watchTime" stroke="#10b981" name="Watch Time (s)" />
+                         ~~~~
+
+client/pages/admin/Analytics.tsx:256:21 - error TS2304: Cannot find name 'LineChart'.
+
+256                   </LineChart>
+                        ~~~~~~~~~
+
+client/pages/admin/Analytics.tsx:257:19 - error TS2304: Cannot find name 'ResponsiveContainer'.
+
+257                 </ResponsiveContainer>
+                      ~~~~~~~~~~~~~~~~~~~
+
+client/pages/admin/Analytics.tsx:319:18 - error TS2304: Cannot find name 'ResponsiveContainer'.
+
+319                 <ResponsiveContainer width="100%" height={300}>
+                     ~~~~~~~~~~~~~~~~~~~
+
+client/pages/admin/Analytics.tsx:320:20 - error TS2552: Cannot find name 'BarChart'. Did you mean 'BarChart3'?
+
+320                   <BarChart data={data.topVideos.slice(0, 5)}>
+                       ~~~~~~~~
+
+client/pages/admin/Analytics.tsx:321:22 - error TS2304: Cannot find name 'CartesianGrid'.
+
+321                     <CartesianGrid strokeDasharray="3 3" />
+                         ~~~~~~~~~~~~~
+
+client/pages/admin/Analytics.tsx:322:22 - error TS2304: Cannot find name 'XAxis'.
+
+322                     <XAxis
+                         ~~~~~
+
+client/pages/admin/Analytics.tsx:330:22 - error TS2304: Cannot find name 'YAxis'.
+
+330                     <YAxis />
+                         ~~~~~
+
+client/pages/admin/Analytics.tsx:331:22 - error TS2304: Cannot find name 'Tooltip'.
+
+331                     <Tooltip />
+                         ~~~~~~~
+
+client/pages/admin/Analytics.tsx:332:22 - error TS2304: Cannot find name 'Legend'.
+
+332                     <Legend />
+                         ~~~~~~
+
+client/pages/admin/Analytics.tsx:333:22 - error TS2304: Cannot find name 'Bar'.
+
+333                     <Bar dataKey="totalViews" fill="#ef4444" name="Total Views" />
+                         ~~~
+
+client/pages/admin/Analytics.tsx:334:21 - error TS2552: Cannot find name 'BarChart'. Did you mean 'BarChart3'?
+
+334                   </BarChart>
+                        ~~~~~~~~
+
+client/pages/admin/Analytics.tsx:335:19 - error TS2304: Cannot find name 'ResponsiveContainer'.
+
+335                 </ResponsiveContainer>
+                      ~~~~~~~~~~~~~~~~~~~
+
+client/pages/admin/Analytics.tsx:378:20 - error TS2304: Cannot find name 'ResponsiveContainer'.
+
+378                   <ResponsiveContainer width="100%" height={250}>
+                       ~~~~~~~~~~~~~~~~~~~
+
+client/pages/admin/Analytics.tsx:379:22 - error TS2304: Cannot find name 'PieChart'.
+
+379                     <PieChart>
+                         ~~~~~~~~
+
+client/pages/admin/Analytics.tsx:380:24 - error TS2304: Cannot find name 'Pie'.
+
+380                       <Pie
+                           ~~~
+
+client/pages/admin/Analytics.tsx:390:28 - error TS2304: Cannot find name 'Cell'.
+
+390                           <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                               ~~~~
+
+client/pages/admin/Analytics.tsx:392:25 - error TS2304: Cannot find name 'Pie'.
+
+392                       </Pie>
+                            ~~~
+
+client/pages/admin/Analytics.tsx:393:24 - error TS2304: Cannot find name 'Tooltip'.
+
+393                       <Tooltip />
+                           ~~~~~~~
+
+client/pages/admin/Analytics.tsx:394:23 - error TS2304: Cannot find name 'PieChart'.
+
+394                     </PieChart>
+                          ~~~~~~~~
+
+client/pages/admin/Analytics.tsx:395:21 - error TS2304: Cannot find name 'ResponsiveContainer'.
+
+395                   </ResponsiveContainer>
+                        ~~~~~~~~~~~~~~~~~~~
+
+client/pages/admin/Analytics.tsx:413:18 - error TS2304: Cannot find name 'ResponsiveContainer'.
+
+413                 <ResponsiveContainer width="100%" height={300}>
+                     ~~~~~~~~~~~~~~~~~~~
+
+client/pages/admin/Analytics.tsx:414:20 - error TS2304: Cannot find name 'BarChart'.
+
+414                   <BarChart data={storageData.folderBreakdown}>
+                       ~~~~~~~~
+
+client/pages/admin/Analytics.tsx:415:22 - error TS2304: Cannot find name 'CartesianGrid'.
+
+415                     <CartesianGrid strokeDasharray="3 3" />
+                         ~~~~~~~~~~~~~
+
+client/pages/admin/Analytics.tsx:416:22 - error TS2304: Cannot find name 'XAxis'.
+
+416                     <XAxis dataKey="name" />
+                         ~~~~~
+
+client/pages/admin/Analytics.tsx:417:22 - error TS2304: Cannot find name 'YAxis'.
+
+417                     <YAxis />
+                         ~~~~~
+
+client/pages/admin/Analytics.tsx:418:22 - error TS2304: Cannot find name 'Tooltip'.
+
+418                     <Tooltip
+                         ~~~~~~~
+
+client/pages/admin/Analytics.tsx:424:22 - error TS2304: Cannot find name 'Legend'.
+
+424                     <Legend />
+                         ~~~~~~
+
+client/pages/admin/Analytics.tsx:425:22 - error TS2304: Cannot find name 'Bar'.
+
+425                     <Bar dataKey="count" fill="#3b82f6" name="Video Count" />
+                         ~~~
+
+client/pages/admin/Analytics.tsx:426:22 - error TS2304: Cannot find name 'Bar'.
+
+426                     <Bar dataKey="sizeGB" fill="#10b981" name="Storage (GB)" />
+                         ~~~
+
+client/pages/admin/Analytics.tsx:427:21 - error TS2304: Cannot find name 'BarChart'.
+
+427                   </BarChart>
+                        ~~~~~~~~
+
+client/pages/admin/Analytics.tsx:428:19 - error TS2304: Cannot find name 'ResponsiveContainer'.
+
+428                 </ResponsiveContainer>
+                      ~~~~~~~~~~~~~~~~~~~
+
+server/serverless.ts:28:10 - error TS2554: Expected 3 arguments, but got 2.
+
+28   return h(event, context);
+            ~
+
+  node_modules/@types/aws-lambda/handler.d.ts:88:5
+    88     callback: Callback<TResult>,
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    An argument for 'callback' was not provided.
+
+
+Found 43 errors in 2 files.
+
+Errors  Files
+    42  client/pages/admin/Analytics.tsx:236
+     1  server/serverless.ts:28
+root@host:/home/Alcatec/web/host.mzansiporns.com/nodeapp# sudo systemctl restart nginx
+Job for nginx.service failed because the control process exited with error code.
+See "systemctl status nginx.service" and "journalctl -xe" for details.
+root@host:/home/Alcatec/web/host.mzansiporns.com/nodeapp# cd /home/Alcatec/web/host.mzansiporns.com/nodeapp
+npm run build
+cp -r dist/* ../public_html/
+
+> build
+> tsc
+
+client/pages/admin/Analytics.tsx:236:18 - error TS2304: Cannot find name 'ResponsiveContainer'.
+
+236                 <ResponsiveContainer width="100%" height={300}>
+                     ~~~~~~~~~~~~~~~~~~~
+
+client/pages/admin/Analytics.tsx:237:20 - error TS2304: Cannot find name 'LineChart'.
+
+237                   <LineChart data={data.viewTrends}>
+                       ~~~~~~~~~
+
+client/pages/admin/Analytics.tsx:238:22 - error TS2304: Cannot find name 'CartesianGrid'.
+
+238                     <CartesianGrid strokeDasharray="3 3" />
+                         ~~~~~~~~~~~~~
+
+client/pages/admin/Analytics.tsx:239:22 - error TS2304: Cannot find name 'XAxis'.
+
+239                     <XAxis
+                         ~~~~~
+
+client/pages/admin/Analytics.tsx:243:22 - error TS2304: Cannot find name 'YAxis'.
+
+243                     <YAxis yAxisId="left" />
+                         ~~~~~
+
+client/pages/admin/Analytics.tsx:244:22 - error TS2304: Cannot find name 'YAxis'.
+
+244                     <YAxis yAxisId="right" orientation="right" />
+                         ~~~~~
+
+client/pages/admin/Analytics.tsx:245:22 - error TS2304: Cannot find name 'Tooltip'.
+
+245                     <Tooltip
+                         ~~~~~~~
+
+client/pages/admin/Analytics.tsx:252:22 - error TS2304: Cannot find name 'Legend'.
+
+252                     <Legend />
+                         ~~~~~~
+
+client/pages/admin/Analytics.tsx:253:22 - error TS2304: Cannot find name 'Line'.
+
+253                     <Line yAxisId="left" type="monotone" dataKey="views" stroke="#ef4444" name="Views" />
+                         ~~~~
+
+client/pages/admin/Analytics.tsx:254:22 - error TS2304: Cannot find name 'Line'.
+
+254                     <Line yAxisId="left" type="monotone" dataKey="uniqueViewers" stroke="#3b82f6" name="Unique Viewers" />
+                         ~~~~
+
+client/pages/admin/Analytics.tsx:255:22 - error TS2304: Cannot find name 'Line'.
+
+255                     <Line yAxisId="right" type="monotone" dataKey="watchTime" stroke="#10b981" name="Watch Time (s)" />
+                         ~~~~
+
+client/pages/admin/Analytics.tsx:256:21 - error TS2304: Cannot find name 'LineChart'.
+
+256                   </LineChart>
+                        ~~~~~~~~~
+
+client/pages/admin/Analytics.tsx:257:19 - error TS2304: Cannot find name 'ResponsiveContainer'.
+
+257                 </ResponsiveContainer>
+                      ~~~~~~~~~~~~~~~~~~~
+
+client/pages/admin/Analytics.tsx:319:18 - error TS2304: Cannot find name 'ResponsiveContainer'.
+
+319                 <ResponsiveContainer width="100%" height={300}>
+                     ~~~~~~~~~~~~~~~~~~~
+
+client/pages/admin/Analytics.tsx:320:20 - error TS2552: Cannot find name 'BarChart'. Did you mean 'BarChart3'?
+
+320                   <BarChart data={data.topVideos.slice(0, 5)}>
+                       ~~~~~~~~
+
+client/pages/admin/Analytics.tsx:321:22 - error TS2304: Cannot find name 'CartesianGrid'.
+
+321                     <CartesianGrid strokeDasharray="3 3" />
+                         ~~~~~~~~~~~~~
+
+client/pages/admin/Analytics.tsx:322:22 - error TS2304: Cannot find name 'XAxis'.
+
+322                     <XAxis
+                         ~~~~~
+
+client/pages/admin/Analytics.tsx:330:22 - error TS2304: Cannot find name 'YAxis'.
+
+330                     <YAxis />
+                         ~~~~~
+
+client/pages/admin/Analytics.tsx:331:22 - error TS2304: Cannot find name 'Tooltip'.
+
+331                     <Tooltip />
+                         ~~~~~~~
+
+client/pages/admin/Analytics.tsx:332:22 - error TS2304: Cannot find name 'Legend'.
+
+332                     <Legend />
+                         ~~~~~~
+
+client/pages/admin/Analytics.tsx:333:22 - error TS2304: Cannot find name 'Bar'.
+
+333                     <Bar dataKey="totalViews" fill="#ef4444" name="Total Views" />
+                         ~~~
+
+client/pages/admin/Analytics.tsx:334:21 - error TS2552: Cannot find name 'BarChart'. Did you mean 'BarChart3'?
+
+334                   </BarChart>
+                        ~~~~~~~~
+
+client/pages/admin/Analytics.tsx:335:19 - error TS2304: Cannot find name 'ResponsiveContainer'.
+
+335                 </ResponsiveContainer>
+                      ~~~~~~~~~~~~~~~~~~~
+
+client/pages/admin/Analytics.tsx:378:20 - error TS2304: Cannot find name 'ResponsiveContainer'.
+
+378                   <ResponsiveContainer width="100%" height={250}>
+                       ~~~~~~~~~~~~~~~~~~~
+
+client/pages/admin/Analytics.tsx:379:22 - error TS2304: Cannot find name 'PieChart'.
+
+379                     <PieChart>
+                         ~~~~~~~~
+
+client/pages/admin/Analytics.tsx:380:24 - error TS2304: Cannot find name 'Pie'.
+
+380                       <Pie
+                           ~~~
+
+client/pages/admin/Analytics.tsx:390:28 - error TS2304: Cannot find name 'Cell'.
+
+390                           <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                               ~~~~
+
+client/pages/admin/Analytics.tsx:392:25 - error TS2304: Cannot find name 'Pie'.
+
+392                       </Pie>
+                            ~~~
+
+client/pages/admin/Analytics.tsx:393:24 - error TS2304: Cannot find name 'Tooltip'.
+
+393                       <Tooltip />
+                           ~~~~~~~
+
+client/pages/admin/Analytics.tsx:394:23 - error TS2304: Cannot find name 'PieChart'.
+
+394                     </PieChart>
+                          ~~~~~~~~
+
+client/pages/admin/Analytics.tsx:395:21 - error TS2304: Cannot find name 'ResponsiveContainer'.
+
+395                   </ResponsiveContainer>
+                        ~~~~~~~~~~~~~~~~~~~
+
+client/pages/admin/Analytics.tsx:413:18 - error TS2304: Cannot find name 'ResponsiveContainer'.
+
+413                 <ResponsiveContainer width="100%" height={300}>
+                     ~~~~~~~~~~~~~~~~~~~
+
+client/pages/admin/Analytics.tsx:414:20 - error TS2304: Cannot find name 'BarChart'.
+
+414                   <BarChart data={storageData.folderBreakdown}>
+                       ~~~~~~~~
+
+client/pages/admin/Analytics.tsx:415:22 - error TS2304: Cannot find name 'CartesianGrid'.
+
+415                     <CartesianGrid strokeDasharray="3 3" />
+                         ~~~~~~~~~~~~~
+
+client/pages/admin/Analytics.tsx:416:22 - error TS2304: Cannot find name 'XAxis'.
+
+416                     <XAxis dataKey="name" />
+                         ~~~~~
+
+client/pages/admin/Analytics.tsx:417:22 - error TS2304: Cannot find name 'YAxis'.
+
+417                     <YAxis />
+                         ~~~~~
+
+client/pages/admin/Analytics.tsx:418:22 - error TS2304: Cannot find name 'Tooltip'.
+
+418                     <Tooltip
+                         ~~~~~~~
+
+client/pages/admin/Analytics.tsx:424:22 - error TS2304: Cannot find name 'Legend'.
+
+424                     <Legend />
+                         ~~~~~~
+
+client/pages/admin/Analytics.tsx:425:22 - error TS2304: Cannot find name 'Bar'.
+
+425                     <Bar dataKey="count" fill="#3b82f6" name="Video Count" />
+                         ~~~
+
+client/pages/admin/Analytics.tsx:426:22 - error TS2304: Cannot find name 'Bar'.
+
+426                     <Bar dataKey="sizeGB" fill="#10b981" name="Storage (GB)" />
+                         ~~~
+
+client/pages/admin/Analytics.tsx:427:21 - error TS2304: Cannot find name 'BarChart'.
+
+427                   </BarChart>
+                        ~~~~~~~~
+
+client/pages/admin/Analytics.tsx:428:19 - error TS2304: Cannot find name 'ResponsiveContainer'.
+
+428                 </ResponsiveContainer>
+                      ~~~~~~~~~~~~~~~~~~~
+
+server/serverless.ts:28:10 - error TS2554: Expected 3 arguments, but got 2.
+
+28   return h(event, context);
+            ~
+
+  node_modules/@types/aws-lambda/handler.d.ts:88:5
+    88     callback: Callback<TResult>,
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    An argument for 'callback' was not provided.
+
+
+Found 43 errors in 2 files.
+
+Errors  Files
+    42  client/pages/admin/Analytics.tsx:236
+     1  server/serverless.ts:28
+root@host:/home/Alcatec/web/host.mzansiporns.com/nodeapp#
