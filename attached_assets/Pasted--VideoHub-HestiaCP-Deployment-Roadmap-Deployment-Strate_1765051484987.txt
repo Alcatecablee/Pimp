@@ -1,0 +1,1460 @@
+# VideoHub HestiaCP Deployment Roadmap
+
+**Deployment Strategy:** VPS with HestiaCP (Full Stack - Frontend + Backend)  
+**Estimated Time:** 3-4 hours  
+**Difficulty:** Intermediate  
+**Cost:** $0/month (using existing resources)
+
+---
+
+## 📋 Table of Contents
+
+1. [Prerequisites Checklist](#prerequisites-checklist)
+2. [Phase 1: VPS Full Stack Setup](#phase-1-vps-full-stack-setup)
+3. [Phase 2: Frontend Static File Deployment](#phase-2-frontend-static-file-deployment)
+4. [Phase 3: Integration & Testing](#phase-3-integration--testing)
+5. [Phase 4: Monitoring & Optimization](#phase-4-monitoring--optimization)
+6. [Troubleshooting Guide](#troubleshooting-guide)
+7. [Rollback Plan](#rollback-plan)
+
+---
+
+## Prerequisites Checklist
+
+### ✅ Resources Required
+
+- [ ] VPS Access
+  - IP: `185.238.2.181`
+  - Domain: `mzansiporns.com`
+  - OS: Debian 11
+  - RAM: 8 GB
+  - CPU: 4 vCPU
+  - Storage: 80 GB
+  - Cluster Type: LXD
+  - HestiaCP installed and accessible
+
+- [ ] Accounts & Services
+  - [ ] GitHub account (for code repository)
+  - [ ] Supabase project (already configured)
+  - [ ] UPnShare API token
+
+- [ ] Development Environment
+  - [ ] SSH client (Terminal, PuTTY, etc.)
+  - [ ] Git installed locally
+  - [ ] Node.js 18+ installed locally
+  - [ ] Code editor (VS Code recommended)
+
+- [ ] Credentials Ready
+  - [ ] VPS root password
+  - [ ] HestiaCP admin credentials
+  - [ ] Supabase connection strings
+  - [ ] UPnShare API token
+  - [ ] Domain DNS access (if needed)
+
+---
+
+## Phase 1: VPS Full Stack Setup
+
+**Duration:** 2-3 hours  
+**Objective:** Deploy Express API with background tasks and setup for frontend static file serving
+
+### Step 1.1: SSH Access & Initial Setup
+
+**Time:** 10 minutes
+
+```bash
+# Connect to your VPS
+ssh root@185.238.2.181
+
+# Update system packages
+apt update && apt upgrade -y
+
+# Install essential tools
+apt install -y git curl build-essential
+```
+
+**Verification:**
+```bash
+# Check system info
+uname -a
+# Should show: Debian 11
+
+free -h
+# Should show: ~8GB RAM
+```
+
+---
+
+### Step 1.2: Install Node.js via NVM
+
+**Time:** 15 minutes
+
+```bash
+# Install NVM (Node Version Manager)
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+
+# Reload bash profile
+source ~/.bashrc
+
+# Install Node.js 18 LTS
+nvm install 18
+nvm use 18
+nvm alias default 18
+
+# Verify installation
+node --version
+# Should show: v18.x.x
+
+npm --version
+# Should show: 9.x.x or higher
+```
+
+**Verification:**
+```bash
+which node
+# Should show: /root/.nvm/versions/node/v18.x.x/bin/node
+```
+
+---
+
+### Step 1.3: Install PM2 Process Manager
+
+**Time:** 5 minutes
+
+```bash
+# Install PM2 globally
+npm install -g pm2
+
+# Verify installation
+pm2 --version
+
+# Configure PM2 to start on system boot
+pm2 startup systemd
+# Copy and run the command it outputs
+```
+
+**Verification:**
+```bash
+pm2 list
+# Should show empty list (no apps running yet)
+```
+
+---
+
+### Step 1.4: Install HestiaCP Node.js Plugin
+
+**Time:** 15 minutes
+
+```bash
+# Download the plugin
+cd /tmp
+git clone https://github.com/cristiancosano/hestiacp-nodejs.git
+cd hestiacp-nodejs
+
+# Make installer executable
+chmod +x install.sh
+
+# Install the plugin
+sudo ./install.sh
+
+# Verify installation
+ls -la /usr/local/hestia/web/templates/nginx/php-fpm/
+# Should see NodeJS.tpl and NodeJS.stpl files
+```
+
+**Troubleshooting:**
+- If installation fails, check HestiaCP version: `v-list-sys-hestia-updates`
+- Minimum HestiaCP version required: 1.4.0+
+
+---
+
+### Step 1.5: Configure HestiaCP User for SSH
+
+**Time:** 5 minutes
+
+**Via HestiaCP Web Interface:**
+
+1. Login to HestiaCP: `https://185.238.2.181:8083`
+2. Navigate to **Users** → Select your user (e.g., `admin`)
+3. Click **Edit**
+4. Scroll to **Advanced Options**
+5. Set **SSH Access** to `bash` (not `nologin`)
+6. Click **Save**
+
+**Via CLI (alternative):**
+```bash
+# Replace 'admin' with your HestiaCP username
+v-change-user-shell admin bash
+```
+
+**Verification:**
+```bash
+# Test SSH as HestiaCP user
+ssh admin@185.238.2.181
+# Should connect successfully
+```
+
+---
+
+### Step 1.6: Setup Domain for Full Stack
+
+**Time:** 20 minutes
+
+**Option A: Via HestiaCP Web Interface (Recommended)**
+
+1. **Add Domain:**
+   - Navigate to **Web** → **Add Domain** (or edit existing `host.mzansiporns.com`)
+   - Domain: `host.mzansiporns.com`
+   - Web Template: `default`
+   - Backend Template: `default`
+   - Proxy Template: `default` (we'll configure this later for Node.js API)
+   - Enable **SSL** (Let's Encrypt)
+   - Click **Save**
+
+2. **Wait for SSL Certificate:**
+   - HestiaCP will automatically request SSL certificate
+   - Wait 2-3 minutes for Let's Encrypt validation
+   - Check: `https://host.mzansiporns.com` (should show default page)
+
+**Note:** We'll configure Nginx later to:
+- Serve static frontend files from the root domain
+- Proxy `/api/*` requests to the Node.js backend on port 3000
+
+**Option B: Via CLI**
+
+```bash
+# Add domain
+v-add-web-domain admin host.mzansiporns.com
+
+# Enable SSL
+v-add-letsencrypt-domain admin host.mzansiporns.com
+
+# Change to NodeJS proxy template
+v-change-web-domain-proxy-tpl admin host.mzansiporns.com NodeJS
+```
+
+**DNS Configuration (if not auto-configured):**
+
+Add these records to your DNS provider:
+
+```
+Type: A
+Name: host.mzansiporns.com
+Value: 185.238.2.181
+TTL: 3600
+```
+
+**Verification:**
+```bash
+# Check DNS resolution
+nslookup host.mzansiporns.com
+# Should return: 185.238.2.181
+
+# Check SSL certificate
+curl -I https://host.mzansiporns.com
+# Should return: 200 or 404 (not SSL error)
+```
+
+---
+
+### Step 1.7: Deploy Backend Code
+
+**Time:** 30 minutes
+
+```bash
+# Switch to HestiaCP user
+su - admin
+
+# Navigate to nodeapp directory
+cd /home/admin/web/host.mzansiporns.com/nodeapp
+
+# Clone your repository (replace with your repo URL)
+# Option 1: Clone from GitHub
+git clone https://github.com/yourusername/videohub.git .
+
+# Option 2: Upload via SCP from your local machine
+# (Run this from your LOCAL machine, not VPS)
+# scp -r /path/to/your/project/* admin@185.238.2.181:/home/admin/web/host.mzansiporns.com/nodeapp/
+
+# Install dependencies
+npm install --production
+
+# Verify node_modules installed
+ls -la node_modules
+```
+
+**Verification:**
+```bash
+# Check if main files exist
+ls -la server/index.ts package.json
+# Should list both files
+```
+
+---
+
+### Step 1.8: Configure Environment Variables
+
+**Time:** 15 minutes
+
+```bash
+# Still in nodeapp directory
+cd /home/admin/web/host.mzansiporns.com/nodeapp
+
+# Create .env file
+nano .env
+```
+
+**Copy and paste this template (fill in your actual values):**
+
+```bash
+# Server Configuration
+PORT=3000
+NODE_ENV=production
+
+# Supabase Database (get from Supabase dashboard → Settings → Database)
+DATABASE_URL=postgresql://postgres:[PASSWORD]@db.[PROJECT-REF].supabase.co:5432/postgres
+
+# Supabase Auth
+SUPABASE_URL=https://[PROJECT-REF].supabase.co
+SUPABASE_ANON_KEY=your_supabase_anon_key_here
+
+# UPnShare API
+UPNSHARE_API_TOKEN=your_upnshare_api_token_here
+
+# Redis Cache (Optional - Upstash Redis)
+# Get free tier at: https://upstash.com
+UPSTASH_REDIS_REST_URL=https://your-redis-url.upstash.io
+UPSTASH_REDIS_REST_TOKEN=your_redis_token
+
+# CORS Configuration (same domain, minimal needed)
+ALLOWED_ORIGINS=https://host.mzansiporns.com,http://localhost:5000
+
+# Background Tasks Configuration
+REFRESH_INTERVAL=300000
+LOG_RETENTION_DAYS=30
+BACKUP_INTERVAL_HOURS=24
+BACKUP_RETENTION_DAYS=7
+BACKUP_DIR=./backups
+
+# Optional: Logging
+LOG_LEVEL=info
+```
+
+**Save and exit:** `Ctrl+X` → `Y` → `Enter`
+
+**Security Check:**
+```bash
+# Set proper permissions (important!)
+chmod 600 .env
+
+# Verify permissions
+ls -la .env
+# Should show: -rw------- (only owner can read/write)
+```
+
+---
+
+### Step 1.9: Update package.json for Production
+
+**Time:** 5 minutes
+
+```bash
+# Edit package.json
+nano package.json
+```
+
+**Ensure these scripts exist:**
+
+```json
+{
+  "scripts": {
+    "start": "node --loader tsx server/index.ts",
+    "build": "tsc",
+    "dev": "tsx watch server/index.ts"
+  }
+}
+```
+
+**Alternative if tsx doesn't work in production:**
+
+```bash
+# Install TypeScript and ts-node for production
+npm install --save-dev typescript ts-node
+
+# Update start script in package.json to:
+"start": "ts-node server/index.ts"
+```
+
+---
+
+### Step 1.10: Test Backend Locally on VPS
+
+**Time:** 10 minutes
+
+```bash
+# Still in nodeapp directory
+# Test run the server
+npm start
+
+# You should see:
+# ✅ Supabase Auth configured
+# 🔧 Initializing database schemas...
+# ✅ PostgreSQL connection pool created
+# 🔄 Starting background tasks (traditional server mode)
+# Server running on port 3000
+```
+
+**In another SSH session, test the API:**
+
+```bash
+# Test health endpoint
+curl http://localhost:3000/api/ping
+
+# Should return: {"message":"ping pong"}
+
+# Test videos endpoint (may take time on first run)
+curl http://localhost:3000/api/videos
+
+# Should return JSON with videos array
+```
+
+**If successful, stop the test server:** `Ctrl+C`
+
+---
+
+### Step 1.11: Start Backend with PM2
+
+**Time:** 10 minutes
+
+```bash
+# Still in nodeapp directory
+
+# Start app with PM2
+pm2 start npm --name "videohub-api" -- start
+
+# Check status
+pm2 status
+# Should show: videohub-api | online
+
+# View logs
+pm2 logs videohub-api --lines 50
+
+# Save PM2 configuration
+pm2 save
+
+# Setup PM2 to restart on system reboot
+pm2 startup
+# Follow the instructions it provides
+```
+
+**PM2 Useful Commands:**
+
+```bash
+# View logs
+pm2 logs videohub-api
+
+# Restart app
+pm2 restart videohub-api
+
+# Stop app
+pm2 stop videohub-api
+
+# Monitor resources
+pm2 monit
+
+# Show app info
+pm2 show videohub-api
+```
+
+---
+
+### Step 1.12: Configure Nginx for Full Stack (Frontend + API)
+
+**Time:** 10 minutes
+
+We need to configure Nginx to serve static frontend files and proxy API requests:
+
+```bash
+# As root or admin user, edit Nginx config
+nano /home/admin/conf/web/host.mzansiporns.com/nginx.conf
+```
+
+**Add or modify the server block with this configuration:**
+
+```nginx
+server {
+    listen      80;
+    listen      443 ssl http2;
+    server_name host.mzansiporns.com;
+    
+    # SSL configuration (handled by HestiaCP)
+    include /home/admin/conf/web/host.mzansiporns.com/nginx.ssl.conf;
+    
+    # Static files root directory (frontend)
+    root /home/admin/web/host.mzansiporns.com/public_html;
+    index index.html;
+    
+    # Proxy API requests to Node.js backend
+    location /api/ {
+        proxy_pass http://127.0.0.1:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_cache_bypass $http_upgrade;
+    }
+    
+    # Serve static frontend files (SPA routing support)
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+    
+    # Cache static assets
+    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+}
+```
+
+**Save and apply configuration:**
+
+```bash
+# Test Nginx configuration
+sudo nginx -t
+
+# Reload Nginx (preserves connections)
+sudo systemctl reload nginx
+
+# Verify Nginx is running
+sudo systemctl status nginx
+# Should show: active (running)
+```
+
+---
+
+### Step 1.13: Test Public API Access
+
+**Time:** 5 minutes
+
+```bash
+# From your LOCAL machine (not VPS)
+
+# Test HTTPS endpoint
+curl https://host.mzansiporns.com/api/ping
+
+# Should return: {"message":"ping pong"}
+
+# Test videos endpoint
+curl https://host.mzansiporns.com/api/videos | jq '.videos | length'
+
+# Should return: number of videos (e.g., 1704)
+```
+
+**Verification Checklist:**
+
+- [ ] HTTPS works (no SSL errors)
+- [ ] `/api/ping` returns 200 OK
+- [ ] `/api/videos` returns video data
+- [ ] Background tasks are running (check PM2 logs)
+
+---
+
+## Phase 2: Frontend Static File Deployment
+
+**Duration:** 30-45 minutes  
+**Objective:** Build and deploy React frontend static files to HestiaCP
+
+### Step 2.1: Build Frontend on VPS
+
+**Time:** 15 minutes
+
+**SSH to VPS:**
+
+```bash
+ssh admin@185.238.2.181
+cd /home/admin/web/host.mzansiporns.com/nodeapp
+```
+
+**Build the frontend:**
+
+```bash
+# Install all dependencies (if not already done)
+npm install
+
+# Build frontend static files
+npm run build:client
+
+# Verify build output
+ls -la dist/spa/
+# Should see: index.html, assets/, etc.
+```
+
+**Expected output:**
+- `dist/spa/index.html` - Main HTML file
+- `dist/spa/assets/` - JavaScript, CSS, and other assets
+
+---
+
+### Step 2.2: Copy Frontend Files to Public HTML Directory
+
+**Time:** 5 minutes
+
+```bash
+# Copy all built files to HestiaCP public_html directory
+cp -r dist/spa/* /home/admin/web/host.mzansiporns.com/public_html/
+
+# Verify files are copied
+ls -la /home/admin/web/host.mzansiporns.com/public_html/
+# Should see index.html and assets/ directory
+```
+
+**Set proper permissions:**
+
+```bash
+# Ensure web server can read files
+chown -R admin:admin /home/admin/web/host.mzansiporns.com/public_html/
+chmod -R 755 /home/admin/web/host.mzansiporns.com/public_html/
+```
+
+---
+
+### Step 2.3: Update Frontend Environment Variables
+
+**Time:** 10 minutes
+
+**Create production environment file for frontend:**
+
+```bash
+# In nodeapp directory
+cd /home/admin/web/host.mzansiporns.com/nodeapp
+nano .env.production
+```
+
+**Add these variables:**
+
+```bash
+# API URL (same domain, no CORS needed)
+VITE_API_URL=https://host.mzansiporns.com
+
+# Supabase (Frontend needs these too)
+VITE_SUPABASE_URL=https://[PROJECT-REF].supabase.co
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key_here
+```
+
+**Note:** Since frontend and backend are on the same domain, we can use relative URLs or the same domain. The API client should handle this automatically.
+
+**Rebuild frontend with production env:**
+
+```bash
+# Build with production environment
+npm run build:client
+
+# Copy updated files
+cp -r dist/spa/* /home/admin/web/host.mzansiporns.com/public_html/
+```
+
+---
+
+### Step 2.4: Update CORS on Backend (Simplified)
+
+**Time:** 5 minutes
+
+**Since frontend and backend are on same domain, update CORS:**
+
+```bash
+cd /home/admin/web/host.mzansiporns.com/nodeapp
+
+# Edit .env file
+nano .env
+```
+
+**Update ALLOWED_ORIGINS (simplified for same domain):**
+
+```bash
+# Allow same origin (no CORS issues)
+ALLOWED_ORIGINS=https://host.mzansiporns.com,http://localhost:5000
+```
+
+**Save and restart:**
+
+```bash
+pm2 restart videohub-api
+```
+
+---
+
+### Step 2.5: Verify Frontend is Accessible
+
+**Time:** 5 minutes
+
+**Test from your browser:**
+
+1. Visit: `https://host.mzansiporns.com`
+2. Should see your VideoHub interface
+3. Open browser console (F12) - should have no CORS errors
+
+**Test from command line:**
+
+```bash
+# Check if index.html is served
+curl https://host.mzansiporns.com
+
+# Should return HTML content (not 404)
+```
+
+**Verification Checklist:**
+
+- [ ] Frontend loads at root domain
+- [ ] No CORS errors in browser console
+- [ ] API calls work (check Network tab)
+- [ ] Videos load correctly
+- [ ] Static assets (JS, CSS) load correctly
+
+---
+
+## Phase 3: Integration & Testing
+
+**Duration:** 1 hour  
+**Objective:** Verify everything works together
+
+### Step 3.1: Functional Testing
+
+**Time:** 30 minutes
+
+**Test these features from your deployed frontend:**
+
+1. **Homepage Loading:**
+   - [ ] Page loads without errors
+   - [ ] Videos display correctly
+   - [ ] Thumbnails load
+   - [ ] Folder filters work
+
+2. **Video Playback:**
+   - [ ] Click a video to open player
+   - [ ] Video streams without buffering
+   - [ ] Player controls work (play, pause, seek)
+   - [ ] View count increments
+
+3. **Search & Filters:**
+   - [ ] Search bar filters videos
+   - [ ] Tag filtering works
+   - [ ] Folder filtering works
+   - [ ] Pagination works
+
+4. **Authentication (if implemented):**
+   - [ ] Login redirects to Supabase
+   - [ ] After login, redirects back to app
+   - [ ] Protected routes work
+   - [ ] Logout works
+
+5. **Admin Features (if authenticated):**
+   - [ ] Admin dashboard accessible
+   - [ ] Can view analytics
+   - [ ] Can manage videos
+   - [ ] Can view logs
+
+---
+
+### Step 3.2: Performance Testing
+
+**Time:** 15 minutes
+
+**Check Performance Metrics:**
+
+```bash
+# Test API response time
+time curl https://host.mzansiporns.com/api/videos > /dev/null
+
+# Should complete in < 5 seconds (cached)
+# First request might take 15-30 seconds (fetching from UPnShare)
+```
+
+**Browser Developer Tools:**
+
+1. Open your deployed site: `https://host.mzansiporns.com`
+2. Press `F12` → **Network** tab
+3. Reload page
+4. Check:
+   - [ ] Page load time < 3 seconds
+   - [ ] API calls complete successfully
+   - [ ] No CORS errors
+   - [ ] No 404 errors
+
+**Lighthouse Audit:**
+
+1. Press `F12` → **Lighthouse** tab
+2. Run audit on Performance, Accessibility, Best Practices
+3. Target scores:
+   - Performance: > 70
+   - Accessibility: > 80
+   - Best Practices: > 80
+
+---
+
+### Step 3.3: Background Tasks Verification
+
+**Time:** 15 minutes
+
+**SSH to VPS and check PM2 logs:**
+
+```bash
+ssh admin@185.238.2.181
+
+# View live logs
+pm2 logs videohub-api
+
+# Look for these messages:
+# ✓ "Background refresh: Completed in XXXms"
+# ✓ "Log cleanup completed: deleted X old logs"
+# ✓ "Scheduled backup completed"
+```
+
+**Check database:**
+
+```bash
+# On VPS, check if logs table exists
+# Install PostgreSQL client if not already:
+sudo apt install postgresql-client
+
+# Connect to Supabase database (use DATABASE_URL from .env)
+psql "postgresql://postgres:[PASSWORD]@db.[PROJECT-REF].supabase.co:5432/postgres"
+
+# Run queries:
+SELECT COUNT(*) FROM logs;
+# Should return some rows
+
+SELECT * FROM logs ORDER BY timestamp DESC LIMIT 5;
+# Should show recent logs
+
+\q
+# Exit psql
+```
+
+**Verify backups:**
+
+```bash
+# Check backup directory
+ls -lh /home/admin/web/host.mzansiporns.com/nodeapp/backups/
+
+# Should see JSON files like:
+# backup-2025-11-11T12-00-00-000Z.json
+```
+
+---
+
+## Phase 4: Monitoring & Optimization
+
+**Duration:** Ongoing  
+**Objective:** Keep system healthy and performant
+
+### Step 4.1: Setup Uptime Monitoring
+
+**Time:** 15 minutes
+
+**Use UptimeRobot (Free):**
+
+1. Go to [uptimerobot.com](https://uptimerobot.com)
+2. Sign up for free account
+3. Add monitors:
+   - **Monitor 1:** `https://host.mzansiporns.com/api/ping` (every 5 min)
+   - **Monitor 2:** `https://host.mzansiporns.com` (every 5 min)
+4. Setup email alerts for downtime
+
+**Alternative: Healthchecks.io**
+
+1. Go to [healthchecks.io](https://healthchecks.io)
+2. Create check for API endpoint
+3. Configure cron job to ping it
+
+---
+
+### Step 4.2: Configure Log Rotation
+
+**Time:** 10 minutes
+
+**On VPS:**
+
+```bash
+# Create logrotate config
+sudo nano /etc/logrotate.d/videohub-api
+```
+
+**Add this configuration:**
+
+```
+/home/admin/web/host.mzansiporns.com/nodeapp/logs/*.log {
+    daily
+    rotate 7
+    compress
+    delaycompress
+    missingok
+    notifempty
+    create 0644 admin admin
+}
+```
+
+**Test logrotate:**
+
+```bash
+sudo logrotate -f /etc/logrotate.d/videohub-api
+```
+
+---
+
+### Step 4.3: Setup PM2 Monitoring
+
+**Time:** 10 minutes
+
+**Install PM2 Plus (Optional - Free tier):**
+
+```bash
+# Register at pm2.io
+pm2 link [secret-key] [public-key]
+
+# Now you can monitor your app at pm2.io dashboard
+```
+
+**Or use built-in monitoring:**
+
+```bash
+# Real-time monitoring
+pm2 monit
+
+# Generate report
+pm2 report
+```
+
+---
+
+### Step 4.4: Setup Redis Cache (Optional)
+
+**Time:** 20 minutes
+
+**Get Upstash Redis (Free Tier):**
+
+1. Go to [upstash.com](https://upstash.com)
+2. Sign up and create database
+3. Select region closest to your VPS
+4. Get REST URL and Token
+
+**Update .env on VPS:**
+
+```bash
+nano /home/admin/web/host.mzansiporns.com/nodeapp/.env
+
+# Add:
+UPSTASH_REDIS_REST_URL=https://your-redis-url.upstash.io
+UPSTASH_REDIS_REST_TOKEN=your_redis_token
+
+# Save and restart
+pm2 restart videohub-api
+```
+
+**Verify Redis is working:**
+
+```bash
+# Check logs
+pm2 logs videohub-api --lines 50 | grep -i redis
+
+# Should see: "Redis configured successfully" (not the warning)
+```
+
+---
+
+### Step 4.5: Optimize VPS Performance
+
+**Time:** 15 minutes
+
+**Install and configure Node.js production optimizations:**
+
+```bash
+# On VPS, as root
+ssh root@185.238.2.181
+
+# Increase Node.js memory limit if needed
+# Edit PM2 ecosystem file
+su - admin
+cd /home/admin/web/host.mzansiporns.com/nodeapp
+
+# Create ecosystem.config.js
+nano ecosystem.config.js
+```
+
+**Add this configuration:**
+
+```javascript
+module.exports = {
+  apps: [{
+    name: 'videohub-api',
+    script: 'npm',
+    args: 'start',
+    instances: 1,
+    exec_mode: 'cluster',
+    max_memory_restart: '500M',
+    env: {
+      NODE_ENV: 'production',
+      NODE_OPTIONS: '--max-old-space-size=512'
+    },
+    error_file: './logs/pm2-error.log',
+    out_file: './logs/pm2-out.log',
+    log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
+    merge_logs: true
+  }]
+};
+```
+
+**Restart with new config:**
+
+```bash
+pm2 delete videohub-api
+pm2 start ecosystem.config.js
+pm2 save
+```
+
+---
+
+## Troubleshooting Guide
+
+### Issue 1: "502 Bad Gateway" on API Domain
+
+**Symptoms:** `https://host.mzansiporns.com` returns 502 error
+
+**Diagnosis:**
+
+```bash
+# Check if PM2 app is running
+pm2 status
+
+# Check app logs
+pm2 logs videohub-api --err --lines 50
+
+# Check Nginx error logs
+sudo tail -f /var/log/nginx/error.log
+```
+
+**Solutions:**
+
+1. **App crashed:**
+   ```bash
+   pm2 restart videohub-api
+   ```
+
+2. **Port mismatch:**
+   ```bash
+   # Check PORT in .env matches Nginx proxy config
+   cat /home/admin/web/host.mzansiporns.com/nodeapp/.env | grep PORT
+   cat /home/admin/conf/web/host.mzansiporns.com/nginx.conf | grep proxy_pass
+   ```
+
+3. **Nginx not running:**
+   ```bash
+   sudo systemctl restart nginx
+   ```
+
+---
+
+### Issue 2: CORS Errors in Browser Console
+
+**Symptoms:** Browser shows: "Access to fetch at '...' has been blocked by CORS policy"
+
+**Diagnosis:**
+
+```bash
+# Check ALLOWED_ORIGINS in .env
+cat /home/admin/web/host.mzansiporns.com/nodeapp/.env | grep ALLOWED_ORIGINS
+```
+
+**Solutions:**
+
+1. **Update ALLOWED_ORIGINS:**
+   ```bash
+   nano .env
+   # Update ALLOWED_ORIGINS if needed
+   pm2 restart videohub-api
+   ```
+
+2. **Wildcard for preview deployments:**
+   ```bash
+   ALLOWED_ORIGINS=https://host.mzansiporns.com,http://localhost:5000
+   ```
+
+---
+
+### Issue 3: Videos Not Loading
+
+**Symptoms:** Frontend shows empty video list
+
+**Diagnosis:**
+
+```bash
+# Test API directly
+curl https://host.mzansiporns.com/api/videos
+
+# Check for errors in response
+```
+
+**Solutions:**
+
+1. **Missing API token:**
+   ```bash
+   nano .env
+   # Verify UPNSHARE_API_TOKEN is set
+   pm2 restart videohub-api
+   ```
+
+2. **Cache is empty:**
+   ```bash
+   # Trigger manual refresh
+   curl -X POST https://host.mzansiporns.com/api/refresh/now
+   
+   # Wait 1 minute, then check again
+   curl https://host.mzansiporns.com/api/videos | jq '.videos | length'
+   ```
+
+---
+
+### Issue 4: Background Tasks Not Running
+
+**Symptoms:** No refresh logs, backups not created
+
+**Diagnosis:**
+
+```bash
+# Check PM2 logs
+pm2 logs videohub-api --lines 100 | grep -i "background\|refresh\|backup"
+```
+
+**Solutions:**
+
+1. **Serverless mode detected:**
+   ```bash
+   # Make sure VERCEL env var is NOT set
+   cat .env | grep VERCEL
+   # Should return nothing
+   
+   # If it exists, remove it:
+   nano .env
+   # Delete the VERCEL line
+   pm2 restart videohub-api
+   ```
+
+2. **Check intervals:**
+   ```bash
+   # Verify intervals in .env
+   cat .env | grep INTERVAL
+   ```
+
+---
+
+### Issue 5: SSL Certificate Errors
+
+**Symptoms:** "Your connection is not private" on host.mzansiporns.com
+
+**Diagnosis:**
+
+```bash
+# Check SSL certificate
+curl -vI https://host.mzansiporns.com 2>&1 | grep -i "ssl\|certificate"
+```
+
+**Solutions:**
+
+1. **Renew Let's Encrypt certificate:**
+   ```bash
+   # As root
+   v-add-letsencrypt-domain admin host.mzansiporns.com
+   ```
+
+2. **Check auto-renewal:**
+   ```bash
+   # Verify cron job exists
+   sudo crontab -l | grep letsencrypt
+   ```
+
+---
+
+### Issue 6: Out of Memory Errors
+
+**Symptoms:** PM2 shows app as "errored", logs show "JavaScript heap out of memory"
+
+**Solutions:**
+
+1. **Increase memory limit:**
+   ```bash
+   # Edit ecosystem.config.js
+   nano ecosystem.config.js
+   
+   # Increase max_memory_restart:
+   max_memory_restart: '1G'
+   
+   # Add to env:
+   NODE_OPTIONS: '--max-old-space-size=1024'
+   
+   # Restart
+   pm2 reload ecosystem.config.js
+   ```
+
+2. **Monitor memory usage:**
+   ```bash
+   pm2 monit
+   # Watch memory column
+   ```
+
+---
+
+### Issue 7: Database Connection Errors
+
+**Symptoms:** Logs show "Failed to connect to database"
+
+**Solutions:**
+
+1. **Verify DATABASE_URL:**
+   ```bash
+   # Test connection manually
+   psql "$(cat .env | grep DATABASE_URL | cut -d '=' -f2)"
+   ```
+
+2. **Check Supabase IP allowlist:**
+   - Supabase may require VPS IP whitelisting
+   - Add `185.238.2.181` to allowed IPs in Supabase dashboard
+
+---
+
+## Rollback Plan
+
+### If VPS Deployment Fails
+
+**Option 1: Revert to Replit**
+
+1. Keep using current Replit deployment
+2. Point Vercel back to Replit API (if you configured it)
+
+**Option 2: Use Vercel Serverless Functions (Temporary)**
+
+1. Move critical endpoints to Vercel serverless functions
+2. Accept timeout limitations for now
+3. Retry VPS setup later
+
+### If Frontend Deployment Fails
+
+**Vercel Issues:**
+
+1. Roll back to previous deployment in Vercel dashboard
+2. Or temporarily use Replit webview
+
+### Complete Rollback Steps
+
+```bash
+# On Vercel dashboard
+1. Go to Deployments
+2. Find last working deployment
+3. Click "..." → "Promote to Production"
+
+# On VPS
+pm2 stop videohub-api
+
+# Update frontend .env.production to old API URL
+# Redeploy to Vercel
+```
+
+---
+
+## Post-Deployment Checklist
+
+### Day 1: Immediate Checks
+
+- [ ] Frontend loads on Vercel URL
+- [ ] API responds on VPS
+- [ ] Videos display correctly
+- [ ] Video playback works
+- [ ] No CORS errors in console
+- [ ] PM2 app shows "online"
+- [ ] Background refresh runs successfully
+
+### Week 1: Monitoring
+
+- [ ] Check PM2 logs daily
+- [ ] Verify backups are being created
+- [ ] Monitor VPS resource usage (CPU, RAM, disk)
+- [ ] Check uptime monitor reports
+- [ ] Test from different devices/locations
+
+### Month 1: Optimization
+
+- [ ] Review API response times
+- [ ] Optimize slow endpoints
+- [ ] Review and clean up logs
+- [ ] Check backup sizes and retention
+- [ ] Consider adding Redis if not already done
+
+---
+
+## Maintenance Schedule
+
+### Daily (Automated)
+
+- Log cleanup (via background task)
+- Video cache refresh (every 5 minutes)
+
+### Weekly (Manual - 10 minutes)
+
+```bash
+# SSH to VPS
+ssh admin@185.238.2.181
+
+# Check PM2 status
+pm2 status
+
+# Review logs for errors
+pm2 logs videohub-api --err --lines 50
+
+# Check disk space
+df -h
+
+# Check memory usage
+free -h
+```
+
+### Monthly (Manual - 30 minutes)
+
+```bash
+# Update system packages
+sudo apt update && sudo apt upgrade -y
+
+# Update Node.js packages
+cd /home/admin/web/host.mzansiporns.com/nodeapp
+npm outdated
+npm update
+
+# Restart app
+pm2 restart videohub-api
+
+# Review and download backups
+ls -lh backups/
+
+# Clean old backups (older than 30 days)
+find backups/ -name "*.json" -mtime +30 -delete
+```
+
+### Quarterly (Manual - 1 hour)
+
+- Review and optimize database queries
+- Audit SSL certificates
+- Review security updates
+- Load test API endpoints
+- Consider upgrading VPS resources if needed
+
+---
+
+## Performance Benchmarks
+
+### Expected Metrics
+
+**API Response Times:**
+- `/api/ping`: < 50ms
+- `/api/videos` (cached): < 500ms
+- `/api/videos` (fresh): 15-30 seconds (first time)
+- `/api/videos/:id`: < 100ms
+
+**Frontend Load Times:**
+- First Contentful Paint: < 1.5s
+- Time to Interactive: < 3.5s
+- Total Page Load: < 4s
+
+**VPS Resource Usage:**
+- CPU: 10-30% average (4 vCPU available)
+- RAM: 500MB - 1GB (8GB total available)
+- Storage: ~5-10GB used (80GB total available)
+- Disk I/O: < 20 MB/s
+
+---
+
+## Security Best Practices
+
+### Implemented
+
+- [x] HTTPS on both frontend and backend
+- [x] Environment variables for secrets
+- [x] CORS properly configured
+- [x] SSH access restricted
+- [x] Firewall enabled on VPS
+- [x] Let's Encrypt SSL auto-renewal
+
+### Recommended Additional Steps
+
+```bash
+# Install and configure UFW firewall
+sudo ufw allow 22/tcp    # SSH
+sudo ufw allow 80/tcp    # HTTP
+sudo ufw allow 443/tcp   # HTTPS
+sudo ufw allow 8083/tcp  # HestiaCP
+sudo ufw enable
+
+# Install fail2ban (prevent brute force)
+sudo apt install fail2ban -y
+sudo systemctl enable fail2ban
+sudo systemctl start fail2ban
+
+# Setup automatic security updates
+sudo apt install unattended-upgrades -y
+sudo dpkg-reconfigure -plow unattended-upgrades
+```
+
+---
+
+## Support & Resources
+
+### Documentation
+
+- HestiaCP: https://docs.hestiacp.com
+- Vercel: https://vercel.com/docs
+- PM2: https://pm2.keymetrics.io/docs
+- Supabase: https://supabase.com/docs
+
+### Community
+
+- HestiaCP Forum: https://forum.hestiacp.com
+- Vercel Community: https://github.com/vercel/vercel/discussions
+
+### Monitoring Tools
+
+- UptimeRobot: https://uptimerobot.com
+- PM2 Plus: https://pm2.io
+- Upstash Redis: https://upstash.com
+
+---
+
+## Success Criteria
+
+Your deployment is successful when:
+
+✅ Frontend loads from Vercel CDN globally  
+✅ API responds from your VPS with < 1s latency  
+✅ Videos load and play without errors  
+✅ Background tasks run automatically (refresh, cleanup, backups)  
+✅ No timeout errors on video data fetching  
+✅ HTTPS works on both frontend and backend  
+✅ Uptime > 99.5% over 30 days  
+✅ Zero cost deployment (using free tiers)  
+
+---
+
+## Estimated Total Time
+
+- **Phase 1 (VPS):** 2-3 hours
+- **Phase 2 (Vercel):** 1-2 hours  
+- **Phase 3 (Testing):** 1 hour
+- **Phase 4 (Optimization):** Ongoing
+
+**Total initial setup:** 4-6 hours  
+**Monthly maintenance:** ~1 hour
+
+---
+
+**Good luck with your deployment! 🚀**
+
+*Last updated: 2025-11-11*
