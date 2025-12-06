@@ -1,0 +1,176 @@
+content.js:3 time: ƒ getTime() { [native code] }
+(index):1 Mixed Content: The page at 'https://host.mzansiporns.com/' was loaded over HTTPS, but requested an insecure resource 'http://host.mzansiporns.com/api/realtime'. This request has been blocked; the content must be served over HTTPS.
+index-BJ9W_pAv.js:10 Error fetching realtime stats: TypeError: Failed to fetch
+    at Ot (index-BJ9W_pAv.js:10:115406)
+    at te (index-BJ9W_pAv.js:10:116537)
+    at index-BJ9W_pAv.js:10:116123
+    at Ea (index-BJ9W_pAv.js:9:24426)
+    at Is (index-BJ9W_pAv.js:9:42785)
+    at ym (index-BJ9W_pAv.js:9:36874)
+    at cn (index-BJ9W_pAv.js:7:3273)
+    at H_ (index-BJ9W_pAv.js:9:41612)
+    at Kn (index-BJ9W_pAv.js:9:40577)
+    at vm (index-BJ9W_pAv.js:9:35978)
+te @ index-BJ9W_pAv.js:10
+await in te
+(anonymous) @ index-BJ9W_pAv.js:10
+Ea @ index-BJ9W_pAv.js:9
+Is @ index-BJ9W_pAv.js:9
+ym @ index-BJ9W_pAv.js:9
+cn @ index-BJ9W_pAv.js:7
+H_ @ index-BJ9W_pAv.js:9
+Kn @ index-BJ9W_pAv.js:9
+vm @ index-BJ9W_pAv.js:9
+M @ index-BJ9W_pAv.js:2
+te @ index-BJ9W_pAv.js:2
+index-BJ9W_pAv.js:10 Error fetching tags: SyntaxError: Unexpected token '<', "<!doctype "... is not valid JSON
+oe @ index-BJ9W_pAv.js:10
+await in oe
+(anonymous) @ index-BJ9W_pAv.js:10
+Ea @ index-BJ9W_pAv.js:9
+Is @ index-BJ9W_pAv.js:9
+ym @ index-BJ9W_pAv.js:9
+cn @ index-BJ9W_pAv.js:7
+H_ @ index-BJ9W_pAv.js:9
+Kn @ index-BJ9W_pAv.js:9
+vm @ index-BJ9W_pAv.js:9
+M @ index-BJ9W_pAv.js:2
+te @ index-BJ9W_pAv.js:2
+index-BJ9W_pAv.js:10 Error fetching videos: SyntaxError: Unexpected token '<', "<!doctype "... is not valid JSON
+me @ index-BJ9W_pAv.js:10
+await in me
+(anonymous) @ index-BJ9W_pAv.js:10
+Ea @ index-BJ9W_pAv.js:9
+Is @ index-BJ9W_pAv.js:9
+ym @ index-BJ9W_pAv.js:9
+cn @ index-BJ9W_pAv.js:7
+H_ @ index-BJ9W_pAv.js:9
+Kn @ index-BJ9W_pAv.js:9
+vm @ index-BJ9W_pAv.js:9
+M @ index-BJ9W_pAv.js:2
+te @ index-BJ9W_pAv.js:2
+index-BJ9W_pAv.js:10 Error fetching tags: SyntaxError: Unexpected token '<', "<!doctype "... is not valid JSON
+oe @ index-BJ9W_pAv.js:10
+await in oe
+(anonymous) @ index-BJ9W_pAv.js:10
+setTimeout
+oe @ index-BJ9W_pAv.js:10
+await in oe
+(anonymous) @ index-BJ9W_pAv.js:10
+Ea @ index-BJ9W_pAv.js:9
+Is @ index-BJ9W_pAv.js:9
+ym @ index-BJ9W_pAv.js:9
+cn @ index-BJ9W_pAv.js:7
+H_ @ index-BJ9W_pAv.js:9
+Kn @ index-BJ9W_pAv.js:9
+vm @ index-BJ9W_pAv.js:9
+M @ index-BJ9W_pAv.js:2
+te @ index-BJ9W_pAv.js:2
+index-BJ9W_pAv.js:10 Error fetching tags: SyntaxError: Unexpected token '<', "<!doctype "... is not valid JSON
+oe @ index-BJ9W_pAv.js:10
+await in oe
+(anonymous) @ index-BJ9W_pAv.js:10
+setTimeout
+oe @ index-BJ9W_pAv.js:10
+await in oe
+(anonymous) @ index-BJ9W_pAv.js:10
+setTimeout
+oe @ index-BJ9W_pAv.js:10
+await in oe
+(anonymous) @ index-BJ9W_pAv.js:10
+Ea @ index-BJ9W_pAv.js:9
+Is @ index-BJ9W_pAv.js:9
+ym @ index-BJ9W_pAv.js:9
+cn @ index-BJ9W_pAv.js:7
+H_ @ index-BJ9W_pAv.js:9
+Kn @ index-BJ9W_pAv.js:9
+vm @ index-BJ9W_pAv.js:9
+M @ index-BJ9W_pAv.js:2
+te @ index-BJ9W_pAv.js:2
+index-BJ9W_pAv.js:10 Error fetching tags: SyntaxError: Unexpected token '<', "<!doctype "... is not valid JSON
+oe @ index-BJ9W_pAv.js:10
+await in oe
+(anonymous) @ index-BJ9W_pAv.js:10
+setTimeout
+oe @ index-BJ9W_pAv.js:10
+await in oe
+(anonymous) @ index-BJ9W_pAv.js:10
+setTimeout
+oe @ index-BJ9W_pAv.js:10
+await in oe
+(anonymous) @ index-BJ9W_pAv.js:10
+setTimeout
+oe @ index-BJ9W_pAv.js:10
+await in oe
+(anonymous) @ index-BJ9W_pAv.js:10
+Ea @ index-BJ9W_pAv.js:9
+Is @ index-BJ9W_pAv.js:9
+ym @ index-BJ9W_pAv.js:9
+cn @ index-BJ9W_pAv.js:7
+H_ @ index-BJ9W_pAv.js:9
+Kn @ index-BJ9W_pAv.js:9
+vm @ index-BJ9W_pAv.js:9
+M @ index-BJ9W_pAv.js:2
+te @ index-BJ9W_pAv.js:2
+index-BJ9W_pAv.js:10 Error fetching tags: SyntaxError: Unexpected token '<', "<!doctype "... is not valid JSON
+oe @ index-BJ9W_pAv.js:10
+await in oe
+(anonymous) @ index-BJ9W_pAv.js:10
+setTimeout
+oe @ index-BJ9W_pAv.js:10
+await in oe
+(anonymous) @ index-BJ9W_pAv.js:10
+setTimeout
+oe @ index-BJ9W_pAv.js:10
+await in oe
+(anonymous) @ index-BJ9W_pAv.js:10
+setTimeout
+oe @ index-BJ9W_pAv.js:10
+await in oe
+(anonymous) @ index-BJ9W_pAv.js:10
+setTimeout
+oe @ index-BJ9W_pAv.js:10
+await in oe
+(anonymous) @ index-BJ9W_pAv.js:10
+Ea @ index-BJ9W_pAv.js:9
+Is @ index-BJ9W_pAv.js:9
+ym @ index-BJ9W_pAv.js:9
+cn @ index-BJ9W_pAv.js:7
+H_ @ index-BJ9W_pAv.js:9
+Kn @ index-BJ9W_pAv.js:9
+vm @ index-BJ9W_pAv.js:9
+M @ index-BJ9W_pAv.js:2
+te @ index-BJ9W_pAv.js:2
+index-BJ9W_pAv.js:10 Error fetching tags: SyntaxError: Unexpected token '<', "<!doctype "... is not valid JSON
+oe @ index-BJ9W_pAv.js:10
+await in oe
+(anonymous) @ index-BJ9W_pAv.js:10
+setTimeout
+oe @ index-BJ9W_pAv.js:10
+await in oe
+(anonymous) @ index-BJ9W_pAv.js:10
+setTimeout
+oe @ index-BJ9W_pAv.js:10
+await in oe
+(anonymous) @ index-BJ9W_pAv.js:10
+setTimeout
+oe @ index-BJ9W_pAv.js:10
+await in oe
+(anonymous) @ index-BJ9W_pAv.js:10
+setTimeout
+oe @ index-BJ9W_pAv.js:10
+await in oe
+(anonymous) @ index-BJ9W_pAv.js:10
+setTimeout
+oe @ index-BJ9W_pAv.js:10
+await in oe
+(anonymous) @ index-BJ9W_pAv.js:10
+Ea @ index-BJ9W_pAv.js:9
+Is @ index-BJ9W_pAv.js:9
+ym @ index-BJ9W_pAv.js:9
+cn @ index-BJ9W_pAv.js:7
+H_ @ index-BJ9W_pAv.js:9
+Kn @ index-BJ9W_pAv.js:9
+vm @ index-BJ9W_pAv.js:9
+M @ index-BJ9W_pAv.js:2
+te @ index-BJ9W_pAv.js:2
